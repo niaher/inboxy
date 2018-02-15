@@ -20,7 +20,9 @@
     <PackageReference Include="CPermissions" Version="1.1.0" />
     <PackageReference Include="Filer.EntityFrameworkCore" Version="0.0.8-beta2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Exchange.WebServices.NETStandard" Version="1.1.2" />
     <PackageReference Include="nofy.entityframeworkcore" Version="0.1.0-beta" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="4.5.0-preview1-25914-04" />
     <PackageReference Include="UiMetadataFramework.Basic" Version="0.0.13-beta" />
     <PackageReference Include="UiMetadataFramework.Core" Version="0.0.12-beta" />
     <PackageReference Include="UiMetadataFramework.MediatR" Version="0.0.11-beta" />
@@ -29,10 +31,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Inboxy.Filing\Inboxy.Filing.csproj" />
     <ProjectReference Include="..\Inboxy.Infrastructure\Inboxy.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DataAccess\" />
   </ItemGroup>
 
 </Project>

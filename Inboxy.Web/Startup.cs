@@ -4,20 +4,9 @@ namespace Inboxy.Web
 	using System.Linq;
 	using Filer.Core;
 	using Filer.EntityFrameworkCore;
-	using MediatR;
-	using Microsoft.AspNetCore.Builder;
-	using Microsoft.AspNetCore.Hosting;
-	using Microsoft.EntityFrameworkCore;
-	using Microsoft.Extensions.Configuration;
-	using Microsoft.Extensions.DependencyInjection;
-	using Microsoft.Extensions.Logging;
-	using Nofy.Core;
-	using Nofy.EntityFrameworkCore;
-	using StructureMap;
-	using StructureMap.TypeRules;
-	using Inboxy.Core.Commands;
 	using Inboxy.Core.DataAccess;
 	using Inboxy.DataSeed;
+	using Inboxy.EmailReader.DataAccess;
 	using Inboxy.Filing;
 	using Inboxy.Filing.Commands;
 	using Inboxy.Infrastructure;
@@ -29,6 +18,17 @@ namespace Inboxy.Web
 	using Inboxy.Users;
 	using Inboxy.Users.Commands;
 	using Inboxy.Web.Middleware;
+	using MediatR;
+	using Microsoft.AspNetCore.Builder;
+	using Microsoft.AspNetCore.Hosting;
+	using Microsoft.EntityFrameworkCore;
+	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.DependencyInjection;
+	using Microsoft.Extensions.Logging;
+	using Nofy.Core;
+	using Nofy.EntityFrameworkCore;
+	using StructureMap;
+	using StructureMap.TypeRules;
 	using UiMetadataFramework.Basic.Input;
 	using UiMetadataFramework.Core.Binding;
 	using UiMetadataFramework.MediatR;
@@ -87,7 +87,8 @@ namespace Inboxy.Web
 			services.ConfigureMvc(this.Configuration);
 
 			// Register all assemblies with IRequestHandler.
-			services.AddMediatR(typeof(DoSomeThing));
+			services.AddMediatR(typeof(CoreDbContext));
+			services.AddMediatR(typeof(EmailReaderDbContext));
 			services.AddMediatR(typeof(InvokeForm));
 			services.AddMediatR(typeof(MyForms));
 			services.AddMediatR(typeof(ManageUsers));
@@ -125,6 +126,10 @@ namespace Inboxy.Web
 				// Inboxy.Core
 				var coreDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
 				config.For<CoreDbContext>().Use(ctx => new CoreDbContext(coreDbContextOptions));
+
+				// Inboxy.EmailReader
+				var emailReaderDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
+				config.For<EmailReaderDbContext>().Use(ctx => new EmailReaderDbContext(emailReaderDbContextOptions));
 
 				// Nofy.
 				var nofyDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;

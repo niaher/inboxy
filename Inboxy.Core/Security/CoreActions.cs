@@ -4,7 +4,7 @@ namespace Inboxy.Core.Security
 
 	public class CoreActions : ActionContainer
 	{
-		public static readonly SystemAction UseTools = new SystemAction(nameof(UseTools), CoreRoles.ToolUser);
+		public static readonly SystemAction UseTool = new SystemAction(nameof(UseTool), CoreRoles.ToolUser);
 		public static readonly SystemAction ViewFiles = new SystemAction(nameof(ViewFiles), CoreRoles.ToolUser);
 	}
 }

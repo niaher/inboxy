@@ -1,7 +1,7 @@
 namespace Inboxy.Core.DataAccess
 {
-	using Microsoft.EntityFrameworkCore;
 	using Inboxy.Core.Domain;
+	using Microsoft.EntityFrameworkCore;
 
 	public class CoreDbContext : DbContext
 	{
@@ -9,12 +9,12 @@ namespace Inboxy.Core.DataAccess
 		{
 		}
 
-		public virtual DbSet<SomeThing> SomeThings { get; set; }
+		public virtual DbSet<ImportedEmail> ImportedEmails { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
-			builder.ApplyConfiguration(new SomeThingMap());
+			builder.ApplyConfiguration(new ImportedEmailMap());
 		}
 	}
 }

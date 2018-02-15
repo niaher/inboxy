@@ -82,7 +82,7 @@
     <Build Include="users\Tables\AspNetUserTokens.sql" />
     <Build Include="nofy\Tables\Notification.sql" />
     <Build Include="nofy\Tables\NotificationAction.sql" />
-    <Build Include="core\Tables\SomeThing.sql" />
+    <Build Include="core\Tables\Email.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="create-db-login-and-user.sql" />

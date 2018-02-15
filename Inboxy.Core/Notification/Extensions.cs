@@ -23,7 +23,7 @@ namespace Inboxy.Core.Notification
 			string summary,
 			NotificationCategory category,
 			params NotificationAction[] actions)
-			where T : IDomainEntity
+			where T : DomainEntity
 		{
 			ns.Publish(new Notification(
 				description,
