@@ -1,0 +1,237 @@
+<div class ="form-header">
+	<h2>{{responseMetadata.title || metadata.label}}</h2>
+</div>
+
+{{#if initialized && visibleInputFields.length > 0}}
+<div class="form-body">
+<form on:submit="submit(app, form, event, true)">
+	{{#each visibleInputFields as inputField}}
+	<FormInput field="{{inputField}}" app="{{app}}" tabindex="{{tabindex * 100 + inputField.metadata.orderIndex}}" form="{{self}}" />
+	{{/each}}
+
+	<button type="submit" disabled="{{disabled}}" tabindex="-1" class="btn btn-info">{{submitButtonLabel}}</button>
+</form>
+</div>
+{{/if}}
+
+{{#if outputFieldValues != null}}
+<div class="response">
+	{{#each outputFieldValues as outputField}}
+	{{#if outputField.metadata.hidden == false}}
+	<FormOutput field="{{outputField}}" app="{{app}}" form="{{form}}" parent="{{self}}" />
+	{{/if}}
+	{{/each}}
+</div>
+{{/if}}
+
+<script>
+	import FormInput from "./Input";
+	import FormOutput from "./Output";
+
+	let tabindex = 1;
+	let formCount = 0;
+
+	var openForms = [];
+
+	function bindEventHandlersToCustomEvents(formComponent, eventHandlers) {
+		let formInstance = formComponent.get("form");
+		let app = formComponent.get("app");
+
+		// Bind all "form event handlers". 
+		for (let eventHandler of eventHandlers) {
+			// Don't bind default event handlers, because they are already auto-bound inside FormInstance.
+			if (eventHandler.runAt.indexOf("form:") === 0) {
+				continue;
+			}
+
+			formComponent.on(eventHandler.runAt, e => {
+				// Augment event args with form which is firing the event. This is needed,
+				// so that event handler can know from which particular form this event is coming.
+				e.form = formComponent;
+				
+				formInstance.handleEvent(eventHandler.runAt, eventHandler, e);
+			});
+		}
+	}
+	
+	export default {
+		ondestroy() {
+			openForms = openForms.filter(f => f !== this);
+		},
+		methods: {
+			init: async function () {
+				if (!this.get("initialized")) {
+					var form = this.get("form");
+
+					this.set({
+						self: this,
+						initialized: true,
+						visibleInputFields: form.inputs.filter(t => t.metadata.hidden == false),
+						submitButtonLabel: form.metadata.customProperties != null && form.metadata.customProperties.submitButtonLabel
+							? form.metadata.customProperties.submitButtonLabel
+							: "Submit"
+					});
+
+					tabindex += 1;
+
+					var app = this.get("app");
+
+					bindEventHandlersToCustomEvents(this, form.metadata.eventHandlers);
+					// TODO: bind input and output event handlers.
+
+					form.fire("form:loaded", { app: app });
+
+					// Auto-submit form if necessary.
+					if (form.metadata.postOnLoad) {
+						await this.submit(app, form);
+					}
+
+					openForms.push(this);
+
+					if (this.get("parent") == null) {
+						if(this.get("responseMetadata").title == null){
+							document.title = form.metadata.label;
+						}						
+					}
+				}
+			},
+			fireAndBubbleUp(eventName, eventArgs) {
+				this.fire(eventName, eventArgs);
+				var parentFormComponent = this.get("parent");
+
+				if (parentFormComponent != null) {
+					parentFormComponent.fireAndBubbleUp(eventName, eventArgs);
+				}
+			},
+			enableForm: function() {
+				var formInstance = this.get("form");
+
+				// Hide all inputs, to re-render them. This is needed due to the way that
+				// Svelte *seems* to work - it doesn't re-render nested components, unless they are recreated.
+				this.set({ visibleInputFields: [] });
+
+				this.set({
+					// Show inputs again.
+					visibleInputFields: formInstance.inputs.filter(t => t.metadata.hidden == false),
+
+					disabled: false
+				});
+			},
+			renderResponse: function(response) {
+				var formInstance = this.get("form");
+
+				// Force Svelte to re-render outputs.
+				this.set({
+					outputFieldValues: null
+				});
+
+				this.set({
+					outputFieldValues: formInstance.outputs,
+					responseMetadata: response.metadata
+				});
+
+				if(this.get("parent") == null){
+					document.title = response.metadata.title;
+				}
+			},
+			submit: async function (app, formInstance, event, redirect) {
+				var self = this;
+				
+				if (event != null) {
+					event.preventDefault();
+				}
+				
+				// If not all required inputs are filled.
+				var allRequiredInputsHaveValues = await formInstance.allRequiredInputsHaveData(redirect == null);
+				if (!allRequiredInputsHaveValues) {
+					return;
+				}
+
+				// Disable double-posts.
+				self.set({ disabled: true });
+
+				// If postOnLoad == true, then the input field values should appear in the url.
+				// Reason is that postOnLoad == true is used by "report" pages, which need
+				// their filters to be saved in the url. This does not apply to forms
+				// with postOnLoad == false, because those forms are usually for creating new data
+				// and hence should not be tracked in browser's history based on parameters.
+				if (formInstance.metadata.postOnLoad && redirect && this.get("useUrl")) {
+					let urlParams = await formInstance.getSerializedInputValues();
+					
+					// Update url in the browser.
+					app.go(formInstance.metadata.id, urlParams);
+					
+					return;
+				}
+				
+				try {
+					await formInstance.submit(app, redirect == null, { formComponent: self });
+					
+					self.enableForm();
+
+					// Signal event to child controls.
+					self.fire("form:responseHandled", {
+						form: self,
+						invokedByUser: event != null,
+						response: response
+					});
+				}
+				catch(e) {
+					self.enableForm();
+				}
+			},
+			reloadTopForm() {
+				var parentFormComponent = this.get("parent");
+				
+				if (parentFormComponent != null) {
+					parentFormComponent.reloadTopForm();
+				}
+				else {
+					let app = this.get("app");
+					let formInstance = this.get("form");
+					this.submit(app, formInstance, null, true);
+				}
+			},
+			reloadAllForms() {				
+				for (let f of openForms) {
+					f.reloadTopForm();
+				}				
+			}
+		},
+		data: function () {
+			return {
+				disabled: false,
+				tabindex: tabindex,
+				urlData: null,
+				initialized: false,
+				responseMetadata: {},
+				useUrl: true,
+				parent: null // Can be set if this is a nested form within another form (i.e. - InlineForm.html)
+			};
+		},
+		components: {
+			FormInput,
+			FormOutput
+		}
+	};
+</script>
+
+<style>
+	.response {
+		margin-top: 15px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	.inline-form .response {
+		margin-top:0;
+		padding: 10px 15px;
+	}
+
+	.inline-form h2 {
+		margin: 0;
+		background: #eee;
+		padding: 10px 15px 15px;
+		font-size: 15px;
+	}
+</style>
