@@ -42,7 +42,7 @@ namespace Inboxy.EmailReader
 			this.ProcessedItemsFolderId = await this.GetFolderId("inboxy-processed");
 		}
 
-		public async Task<PaginatedData<EmailMessage>> Read(Paginator paginator, DateTime? minReceivedDate = null)
+		public async Task<PaginatedData<EmailMessage>> Read(Paginator paginator)
 		{
 			var pageSize = paginator.PageSize ?? 10;
 
@@ -52,22 +52,22 @@ namespace Inboxy.EmailReader
 			var itemView = new ItemView(pageSize, pageIndex * pageSize)
 			{
 				Traversal = ItemTraversal.Shallow,
-				PropertySet = new PropertySet(BasePropertySet.FirstClassProperties, ItemSchema.Subject, ItemSchema.DateTimeReceived)
+				PropertySet = new PropertySet(BasePropertySet.IdOnly)
 			};
 
 			itemView.PropertySet.RequestedBodyType = BodyType.Text;
 
-			var filter = new SearchFilter.SearchFilterCollection();
-
-			if (minReceivedDate != null)
-			{
-				filter.Add(new SearchFilter.IsGreaterThanOrEqualTo(ItemSchema.DateTimeReceived, minReceivedDate));
-			}
-
 			var items = await this.serviceInstance.FindItems(
 				this.NewItemsFolderId,
-				filter,
 				itemView);
+
+			await this.serviceInstance.LoadPropertiesForItems(
+				items,
+				new PropertySet(
+					BasePropertySet.FirstClassProperties,
+					ItemSchema.Subject,
+					ItemSchema.DateTimeReceived,
+					ItemSchema.Body));
 
 			return new PaginatedData<EmailMessage>
 			{
@@ -93,7 +93,7 @@ namespace Inboxy.EmailReader
 
 		private async Task<FolderId> GetFolderId(string folderDisplayName)
 		{
-			FolderView view = new FolderView(10)
+			FolderView view = new FolderView(1)
 			{
 				PropertySet = new PropertySet(BasePropertySet.IdOnly)
 				{
@@ -104,7 +104,7 @@ namespace Inboxy.EmailReader
 			SearchFilter searchFilter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, folderDisplayName);
 			view.Traversal = FolderTraversal.Deep;
 
-			FindFoldersResults findFolderResults = await this.serviceInstance.FindFolders(WellKnownFolderName.Inbox, view);
+			FindFoldersResults findFolderResults = await this.serviceInstance.FindFolders(WellKnownFolderName.Inbox, searchFilter, view);
 
 			return findFolderResults.Folders[0].Id;
 		}
