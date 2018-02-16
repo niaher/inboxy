@@ -55,6 +55,8 @@ namespace Inboxy.EmailReader.Commands
 
 			await this.context.SaveChangesAsync();
 
+			await this.repository.MoveItemsToProcessedFolder(result.Results.Select(t => t.Id).ToList());
+
 			return new Response();
 		}
 

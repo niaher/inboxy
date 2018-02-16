@@ -1,6 +1,7 @@
 namespace Inboxy.EmailReader
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Microsoft.Exchange.WebServices.Data;
@@ -40,6 +41,11 @@ namespace Inboxy.EmailReader
 		{
 			this.NewItemsFolderId = await this.GetFolderId("inboxy-new");
 			this.ProcessedItemsFolderId = await this.GetFolderId("inboxy-processed");
+		}
+
+		public async Task MoveItemsToProcessedFolder(IEnumerable<ItemId> itemIds)
+		{
+			await this.serviceInstance.MoveItems(itemIds, this.ProcessedItemsFolderId);
 		}
 
 		public async Task<PaginatedData<EmailMessage>> Read(Paginator paginator)
