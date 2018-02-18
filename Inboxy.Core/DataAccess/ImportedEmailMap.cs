@@ -13,10 +13,15 @@ namespace Inboxy.Core.DataAccess
 			entity.Property(t => t.MessageId).HasColumnName("MessageId").IsUnicode(false);
 			entity.Property(t => t.Subject).HasColumnName("Subject").IsUnicode();
 			entity.Property(t => t.Body).HasColumnName("Body").IsUnicode();
-			entity.Property(t => t.From).HasColumnName("From").IsUnicode(false);
+			entity.Property(t => t.From).HasColumnName("From").IsUnicode(false).HasMaxLength(ImportedEmail.FromMaxLength);
 			entity.Property(t => t.Id).HasColumnName("Id");
 			entity.Property(t => t.ImportedOn).HasColumnName("ImportedOn");
 			entity.Property(t => t.ReceivedOn).HasColumnName("ReceivedOn");
+			entity.Property(t => t.InboxId).HasColumnName("InboxId");
+
+			entity.HasOne(t => t.Inbox)
+				.WithMany(t => t.Emails)
+				.HasForeignKey(t => t.InboxId);
 		}
 	}
 }

@@ -83,6 +83,8 @@
     <Build Include="nofy\Tables\Notification.sql" />
     <Build Include="nofy\Tables\NotificationAction.sql" />
     <Build Include="core\Tables\Email.sql" />
+    <Build Include="core\Tables\Inbox.sql" />
+    <Build Include="core\Tables\InboxUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="create-db-login-and-user.sql" />

@@ -5,6 +5,7 @@ namespace Inboxy.Infrastructure
 	using System.Linq;
 	using System.Linq.Expressions;
 	using System.Reflection;
+	using System.Text.RegularExpressions;
 	using Inboxy.Infrastructure.Forms.Menu;
 	using Inboxy.Infrastructure.Forms.Outputs;
 	using Inboxy.Infrastructure.Forms.Typeahead;
@@ -69,6 +70,25 @@ namespace Inboxy.Infrastructure
 				}),
 				TotalItemCount = queryable.Count
 			};
+		}
+
+		public static string CleanAndEnforceFormat(this string value, int nameMaxLength, string field)
+		{
+			if (value == null)
+			{
+				throw new ArgumentNullException(nameof(value));
+			}
+
+			var cleanName = value.TrimAndRemoveDuplicateWhitespace();
+
+			if (string.IsNullOrWhiteSpace(cleanName))
+			{
+				throw new BusinessException(field + " cannot be an empty string.");
+			}
+
+			cleanName.EnforceMaxLength(nameMaxLength);
+
+			return cleanName;
 		}
 
 		public static void EnforceMaxLength(this string value, int maxLength)
@@ -197,6 +217,11 @@ namespace Inboxy.Infrastructure
 				Results = paginatedData.Results.Select(transform).ToList(),
 				TotalCount = paginatedData.TotalCount
 			};
+		}
+
+		public static string TrimAndRemoveDuplicateWhitespace(this string value)
+		{
+			return Regex.Replace(value, @"\s+", " ").Trim();
 		}
 
 		public static FormLink WithAction(this FormLink formLink, string action)

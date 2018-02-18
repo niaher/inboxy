@@ -13,8 +13,16 @@ namespace Inboxy.Core.Domain
 	/// </summary>
 	public class ImportedEmail : DomainEntityWithKeyInt32
 	{
+		internal const int FromMaxLength = 200;
+
 		protected ImportedEmail()
 		{
+		}
+
+		public ImportedEmail(Inbox inbox)
+		{
+			this.InboxId = inbox.Id;
+			this.Inbox = inbox;
 		}
 
 		/// <summary>
@@ -31,6 +39,13 @@ namespace Inboxy.Core.Domain
 		/// Gets date when the email was imported into the system.
 		/// </summary>
 		public DateTime ImportedOn { get; private set; }
+
+		public virtual Inbox Inbox { get; private set; }
+
+		/// <summary>
+		/// Gets inbox from which this email was imported.
+		/// </summary>
+		public int InboxId { get; private set; }
 
 		/// <summary>
 		/// Unique identifier for the email in the inbox.

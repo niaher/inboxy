@@ -1,0 +1,10 @@
+CREATE TABLE [dbo].[Inbox]
+(
+	[Id] INT NOT NULL IDENTITY (1, 1) PRIMARY KEY CLUSTERED,
+	CreatedOn DATETIME NOT NULL,
+	[Email] VARCHAR(200) NOT NULL,
+	[Name] NVARCHAR(200) NULL,
+	[NewItemsFolder] NVARCHAR(200) NOT NULL,
+	[ProcessedItemsFolder] NVARCHAR(200) NOT NULL,
+	INDEX UX_Inbox_Email UNIQUE (Email)
+)

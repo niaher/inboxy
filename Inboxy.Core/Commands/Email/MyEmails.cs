@@ -1,6 +1,7 @@
-﻿namespace Inboxy.Core.Commands
+﻿namespace Inboxy.Core.Commands.Email
 {
 	using System;
+	using System.Linq;
 	using System.Threading.Tasks;
 	using CPermissions;
 	using Inboxy.Core.DataAccess;
@@ -9,25 +10,30 @@
 	using Inboxy.Infrastructure;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Security;
+	using Inboxy.Infrastructure.User;
 	using MediatR;
 	using UiMetadataFramework.Basic.Input;
 	using UiMetadataFramework.Basic.Output;
 	using UiMetadataFramework.Core;
 
-	[MyForm(Id = "emails", Label = "Imported emails", PostOnLoad = true, SubmitButtonLabel = "Search", Menu = CoreMenus.Emails)]
-	public class Emails : IMyAsyncForm<Emails.Request, Emails.Response>,
+	[MyForm(Id = "my-emails", Label = "Imported emails", PostOnLoad = true, SubmitButtonLabel = "Search", Menu = CoreMenus.Emails)]
+	public class MyEmails : IMyAsyncForm<MyEmails.Request, MyEmails.Response>,
 		ISecureHandler
 	{
 		private readonly CoreDbContext context;
+		private readonly UserContext userContext;
 
-		public Emails(CoreDbContext context)
+		public MyEmails(CoreDbContext context, UserContext userContext)
 		{
 			this.context = context;
+			this.userContext = userContext;
 		}
 
 		public async Task<Response> Handle(Request message)
 		{
-			var emails = await this.context.ImportedEmails.PaginateAsync(message.EmailPaginator);
+			var emails = await this.context.ImportedEmails
+				.Where(t => t.Inbox.Users.Any(x => x.UserId == this.userContext.User.UserId))
+				.PaginateAsync(message.EmailPaginator);
 
 			return new Response
 			{

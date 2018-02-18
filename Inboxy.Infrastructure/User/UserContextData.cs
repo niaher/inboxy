@@ -7,11 +7,15 @@ namespace Inboxy.Infrastructure.User
 		[JsonConstructor]
 		public UserContextData(
 			[JsonProperty(nameof(UserName))] string userName,
-			[JsonProperty(nameof(UserId))] int userId)
+			[JsonProperty(nameof(UserId))] int userId,
+			[JsonProperty(nameof(InboxIds))] int[] inboxIds)
 		{
 			this.UserName = userName;
 			this.UserId = userId;
+			this.InboxIds = inboxIds;
 		}
+
+		public int[] InboxIds { get; }
 
 		public int UserId { get; }
 
