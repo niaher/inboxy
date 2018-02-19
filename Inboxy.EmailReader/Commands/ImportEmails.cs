@@ -5,7 +5,6 @@ namespace Inboxy.EmailReader.Commands
 	using CPermissions;
 	using Inboxy.EmailReader.DataAccess;
 	using Inboxy.EmailReader.Domain;
-	using Inboxy.EmailReader.Menus;
 	using Inboxy.EmailReader.Security;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Security;
@@ -13,7 +12,7 @@ namespace Inboxy.EmailReader.Commands
 	using UiMetadataFramework.Basic.Input;
 	using UiMetadataFramework.Core;
 
-	[MyForm(Id = "import-emails", Label = "Import emails from inbox", PostOnLoad = true, Menu = EmailReaderMenus.Emails)]
+	[MyForm(Id = "import-emails", Label = "Import emails from inbox", PostOnLoad = true)]
 	public class ImportEmails : IMyAsyncForm<ImportEmails.Request, ImportEmails.Response>,
 		ISecureHandler
 	{

@@ -14,6 +14,8 @@ namespace Inboxy.Core
 			{
 				yield return CoreRoles.ToolUser;
 			}
+
+			yield return CoreRoles.Anyone;
 		}
 	}
 }

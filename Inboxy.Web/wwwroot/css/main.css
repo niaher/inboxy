@@ -2023,8 +2023,7 @@ table.striped tr:nth-of-type(2n) > td {
   transform: scaleY(0);
   -webkit-transform-origin: top;
   transform-origin: top;
-  transition: -webkit-transform 0.3s,
- transform 0.3s; }
+  transition: -webkit-transform 0.3s, transform 0.3s; }
 
 .tabs > label:not(:first-of-type) {
   border-left: 0; }

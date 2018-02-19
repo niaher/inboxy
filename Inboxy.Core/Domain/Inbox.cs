@@ -4,6 +4,7 @@ namespace Inboxy.Core.Domain
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Inboxy.Infrastructure;
 	using Inboxy.Infrastructure.Domain;
 
@@ -42,6 +43,19 @@ namespace Inboxy.Core.Domain
 		public string ProcessedItemsFolder { get; private set; }
 		public IEnumerable<InboxUser> Users => this.users.AsReadOnly();
 
+		public InboxUser AddUser(RegisteredUser user)
+		{
+			var inboxUser = this.users.SingleOrDefault(t => t.UserId == user.Id);
+
+			if (inboxUser == null)
+			{
+				inboxUser = new InboxUser(this, user);
+				this.users.Add(inboxUser);
+			}
+
+			return inboxUser;
+		}
+
 		public void ChangeEmail(string email)
 		{
 			this.Email = email.CleanAndEnforceFormat(EmailMaxLength, nameof(this.Email));
@@ -60,11 +74,6 @@ namespace Inboxy.Core.Domain
 		public void ChangeProcessedItemsFolder(string folderName)
 		{
 			this.ProcessedItemsFolder = folderName.CleanAndEnforceFormat(ProcessedItemsFolderMaxLength, nameof(this.ProcessedItemsFolder));
-		}
-
-		public InboxUser AddUser(RegisteredUser user)
-		{
-			this.users.Add(new InboxUser(this, user));
 		}
 	}
 }

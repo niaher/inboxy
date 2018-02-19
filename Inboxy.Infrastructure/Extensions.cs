@@ -36,6 +36,14 @@ namespace Inboxy.Infrastructure
 			return new ObjectList<T>(items, binder);
 		}
 
+		public static ObjectListItem<T> AsObjectListItem<T>(this T item)
+		{
+			return new ObjectListItem<T>
+			{
+				Value = item
+			};
+		}
+
 		public static RedirectResponse AsRedirectResponse(this FormLink formLink)
 		{
 			return new RedirectResponse
@@ -196,6 +204,15 @@ namespace Inboxy.Infrastructure
 
 			var userRoleCheckerRegister = dependencyInjectionContainer.GetInstance<UserRoleCheckerRegister>();
 			userRoleCheckerRegister.RegisterAssembly(assembly);
+		}
+
+		/// <summary>
+		/// Instructs client that when <see cref="FormLink"/> is clicked, the client should run the action immediately 
+		/// and then redirect to another form.
+		/// </summary>
+		public static FormLinkWithRedirect RunAndRedirectTo(this FormLink self, FormLink redirectTo)
+		{
+			return new FormLinkWithRedirect(self, redirectTo);
 		}
 
 		public static T SingleOrException<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> where)

@@ -1,7 +1,6 @@
 namespace Inboxy.Web
 {
 	using System;
-	using Inboxy.EmailReader;
 	using Inboxy.Infrastructure.Configuration;
 	using Inboxy.Infrastructure.Messages;
 	using Inboxy.Users;
@@ -73,7 +72,6 @@ namespace Inboxy.Web
 			// Configure options from appsettings.json.
 			services.AddOptions();
 			services.Configure<AppConfig>(configuration.GetSection("AppConfig"));
-			services.Configure<InboxConfig>(configuration.GetSection("InboxConfig"));
 
 			services.AddCors(o => o.AddPolicy(Startup.CorsAllowAllPolicy, builder =>
 			{

@@ -19,10 +19,16 @@ namespace Inboxy.Core.Domain
 		{
 		}
 
-		public ImportedEmail(Inbox inbox)
+		internal ImportedEmail(Inbox inbox, string messageId, string from, string subject, string body, DateTime receivedOn)
 		{
 			this.InboxId = inbox.Id;
 			this.Inbox = inbox;
+			this.MessageId = messageId;
+			this.ImportedOn = DateTime.UtcNow;
+			this.Subject = subject;
+			this.From = from;
+			this.Body = body;
+			this.ReceivedOn = receivedOn;
 		}
 
 		/// <summary>

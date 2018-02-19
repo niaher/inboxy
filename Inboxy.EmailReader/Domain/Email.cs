@@ -57,5 +57,7 @@ namespace Inboxy.EmailReader.Domain
 		/// Gets email subject.
 		/// </summary>
 		public string Subject { get; private set; }
+
+
 	}
 }

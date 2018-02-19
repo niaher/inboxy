@@ -6,7 +6,6 @@ namespace Inboxy.Web
 	using Filer.EntityFrameworkCore;
 	using Inboxy.Core.DataAccess;
 	using Inboxy.DataSeed;
-	using Inboxy.EmailReader.DataAccess;
 	using Inboxy.Filing;
 	using Inboxy.Filing.Commands;
 	using Inboxy.Infrastructure;
@@ -88,7 +87,6 @@ namespace Inboxy.Web
 
 			// Register all assemblies with IRequestHandler.
 			services.AddMediatR(typeof(CoreDbContext));
-			services.AddMediatR(typeof(EmailReaderDbContext));
 			services.AddMediatR(typeof(InvokeForm));
 			services.AddMediatR(typeof(MyForms));
 			services.AddMediatR(typeof(ManageUsers));
@@ -126,11 +124,7 @@ namespace Inboxy.Web
 				// Inboxy.Core
 				var coreDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
 				config.For<CoreDbContext>().Use(ctx => new CoreDbContext(coreDbContextOptions));
-
-				// Inboxy.EmailReader
-				var emailReaderDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
-				config.For<EmailReaderDbContext>().Use(ctx => new EmailReaderDbContext(emailReaderDbContextOptions));
-
+				
 				// Nofy.
 				var nofyDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
 				config.For<INotificationRepository>().Use<NotificationRepository>();

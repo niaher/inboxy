@@ -2,63 +2,76 @@ namespace Inboxy.DataSeed
 {
 	using System.Linq;
 	using System.Threading.Tasks;
-	using Microsoft.AspNetCore.Identity;
-	using Microsoft.EntityFrameworkCore;
+	using Inboxy.Core.DataAccess;
 	using Inboxy.Core.Security;
 	using Inboxy.Infrastructure.Security;
 	using Inboxy.Users;
 	using Inboxy.Users.Security;
+	using Microsoft.AspNetCore.Identity;
 
 	public class DataSeed
 	{
 		private readonly ActionRegister actionRegister;
+		private readonly CoreDbContext context;
 		private readonly RoleManager<ApplicationRole> roleManager;
 		private readonly UserManager<ApplicationUser> userManager;
 
 		public DataSeed(
 			UserManager<ApplicationUser> userManager,
 			RoleManager<ApplicationRole> roleManager,
-			ActionRegister actionRegister)
+			ActionRegister actionRegister,
+			CoreDbContext context)
 		{
 			this.userManager = userManager;
 			this.roleManager = roleManager;
 			this.actionRegister = actionRegister;
+			this.context = context;
 		}
 
 		public async Task Seed(bool productionEnvironment = false)
 		{
+			await this.EnsureRoles();
+
 			if (!productionEnvironment)
 			{
 				await this.SeedUsers();
+				await this.SeedInboxes();
 			}
 		}
 
-		private async Task<ApplicationUser> EnsureUser(string email, string password, params SystemRole[] roles)
+		private async Task EnsureInbox(string inboxEmail, params string[] adminEmails)
 		{
-			await this.userManager.CreateAsync(new ApplicationUser
-			{
-				UserName = email,
-				Email = email
-			}, password);
+			var inbox = await this.context.EnsureInbox(inboxEmail, "inboxy-new", "inboxy-processed");
 
-			var user = await this.userManager.Users.SingleAsync(t => t.Email == email);
-
-			foreach (var role in roles)
+			foreach (var adminEmail in adminEmails)
 			{
-				await this.userManager.AddToRoleAsync(user, role.Name);
+				var user = await this.userManager.EnsureUser(adminEmail, "Password1", CoreRoles.ToolUser);
+				var registeredUser = await this.context.RegisteredUsers.FindAsync(user.Id);
+				inbox.AddUser(registeredUser);
 			}
 
-			return user;
+			await this.context.SaveChangesAsync();
+		}
+
+		private async Task EnsureRoles()
+		{
+			var manuallyAssignableSystemRoles = this.actionRegister.GetSystemRoles()
+				.Where(t => !t.IsDynamicallyAssigned)
+				.ToArray();
+
+			await this.roleManager.EnsureRoles(manuallyAssignableSystemRoles);
+		}
+
+		private async Task SeedInboxes()
+		{
+			await this.EnsureInbox("ict.infrastructure@example.com", "andreh@example.com", "karsten@example.com");
+			await this.EnsureInbox("helpdesk@example.com", "nikita@example.com", "omar@example.com");
+			await this.EnsureInbox("ictdev@example.com", "nikita@example.com", "mohammed@example.com", "nehad@example.com");
 		}
 
 		private async Task SeedUsers()
 		{
-			var manuallyAssignableSystemRoles = this.actionRegister.GetSystemRoles()
-				.Where(t => !t.IsDynamicallyAssigned).Select(t => t.Name);
-
-			await this.roleManager.EnsureRoles(manuallyAssignableSystemRoles);
-
-			await this.EnsureUser("admin@example.com", "Password1", UserManagementRoles.UserAdmin, CoreRoles.ToolUser);
+			await this.userManager.EnsureUser("admin@example.com", "Password1", UserManagementRoles.UserAdmin, CoreRoles.ToolUser);
 		}
 	}
 }

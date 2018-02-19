@@ -3,12 +3,14 @@
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 	using CPermissions;
+	using Inboxy.Core.Commands.Email;
 	using Inboxy.Core.DataAccess;
 	using Inboxy.Core.Domain;
 	using Inboxy.Core.Security.Inbox;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Security;
 	using MediatR;
+	using Microsoft.EntityFrameworkCore;
 	using UiMetadataFramework.Basic.Output;
 	using UiMetadataFramework.Core;
 	using UiMetadataFramework.Core.Binding;
@@ -32,6 +34,7 @@
 		public async Task<Response> Handle(Request message)
 		{
 			var inbox = await this.context.Inboxes.SingleOrExceptionAsync(t => t.Id == message.InboxId);
+			var emailCount = await this.context.ImportedEmails.CountAsync(t => t.InboxId == message.InboxId);
 
 			return new Response
 			{
@@ -39,7 +42,8 @@
 				Email = inbox.Email,
 				NewItemsFolder = inbox.NewItemsFolder,
 				ProcessedItemsFolder = inbox.ProcessedItemsFolder,
-				Actions = new ActionList(EditInbox.Button(inbox.Id)),
+				EmailCount = MyEmails.Button(emailCount.ToString(), inbox.Id),
+				Actions = new ActionList(EditInbox.Button(inbox.Id), ImportEmails.Button(inbox.Id, "Import emails")),
 				Metadata = new MyFormResponseMetadata
 				{
 					Title = inbox.Name
@@ -76,6 +80,9 @@
 
 			[OutputField(Label = "Email", OrderIndex = 5)]
 			public string Email { get; set; }
+
+			[OutputField(Label = "Imported emails", OrderIndex = 20)]
+			public FormLink EmailCount { get; set; }
 
 			[OutputField(Label = "Id", OrderIndex = 1)]
 			public int Id { get; set; }

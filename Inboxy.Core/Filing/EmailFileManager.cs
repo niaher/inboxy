@@ -52,13 +52,13 @@ namespace Inboxy.Core.Filing
 
 		private bool CanDo(object entityId, EmailAction action)
 		{
-			var grantId = Convert.ToInt32(entityId);
-			var grant = (ImportedEmail)this.repository.Find(grantId);
+			var emailId = Convert.ToInt32(entityId);
+			var email = (ImportedEmail)this.repository.Find(emailId);
 
 			return this.emailPermissionManager.CanDo(
 				action,
 				this.userContext,
-				grant);
+				email);
 		}
 	}
 }

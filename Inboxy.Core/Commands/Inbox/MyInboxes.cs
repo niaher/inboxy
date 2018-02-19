@@ -15,7 +15,7 @@
 	using UiMetadataFramework.Core;
 	using UiMetadataFramework.Core.Binding;
 
-	[MyForm(Id = "my-inboxes", PostOnLoad = true, Menu = CoreMenus.Emails)]
+	[MyForm(Id = "my-inboxes", PostOnLoad = true, Menu = CoreMenus.Emails, Label = "Inboxes")]
 	public class MyInboxes : IMyAsyncForm<MyInboxes.Request, MyInboxes.Response>, ISecureHandler
 	{
 		private readonly CoreDbContext context;
@@ -33,7 +33,7 @@
 				.Where(t => t.Users.Any(x => x.UserId == this.userContext.User.UserId))
 				.PaginateAsync(t => new InboxRow
 				{
-					Email = t.Email,
+					Email = InboxOverview.Button(t.Id, t.Name),
 					Name = t.Name,
 					NewItemsFolder = t.NewItemsFolder,
 					ProcessedItemsFolder = t.ProcessedItemsFolder
@@ -67,9 +67,16 @@
 
 		public class InboxRow
 		{
-			public string Email { get; set; }
+			[OutputField(OrderIndex = 1)]
+			public FormLink Email { get; set; }
+
+			[OutputField(OrderIndex = 2)]
 			public string Name { get; set; }
+
+			[OutputField(Label = "New items folder", OrderIndex = 5)]
 			public string NewItemsFolder { get; set; }
+
+			[OutputField(Label = "Processed items folder", OrderIndex = 10)]
 			public string ProcessedItemsFolder { get; set; }
 		}
 	}

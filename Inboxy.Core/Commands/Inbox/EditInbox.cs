@@ -9,10 +9,11 @@
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Forms.Record;
 	using Inboxy.Infrastructure.Security;
+	using UiMetadataFramework.Basic.EventHandlers;
 	using UiMetadataFramework.Basic.Output;
 	using UiMetadataFramework.Core.Binding;
 
-	[MyForm(Id = "edit-inbox", PostOnLoad = true, PostOnLoadValidation = false)]
+	[MyForm(Id = "edit-inbox", PostOnLoad = true, PostOnLoadValidation = false, Label = "Edit inbox", SubmitButtonLabel = "Save changes")]
 	public class EditInbox : IMyAsyncForm<EditInbox.Request, EditInbox.Response>, IAsyncSecureHandler<Inbox, EditInbox.Request, EditInbox.Response>
 	{
 		private readonly CoreDbContext context;
@@ -66,18 +67,22 @@
 		public class Request : RecordRequest<Response>, ISecureHandlerRequest
 		{
 			[InputField(OrderIndex = 1, Required = true)]
+			[BindToOutput(nameof(Response.Email))]
 			public string Email { get; set; }
 
 			[InputField(Hidden = true)]
 			public int InboxId { get; set; }
 
 			[InputField(OrderIndex = 5, Required = true)]
+			[BindToOutput(nameof(Response.Name))]
 			public string Name { get; set; }
 
-			[InputField(OrderIndex = 15, Required = true)]
+			[InputField(OrderIndex = 15, Required = true, Label = "New items folder")]
+			[BindToOutput(nameof(Response.NewItemsFolder))]
 			public string NewItemsFolder { get; set; }
 
-			[InputField(OrderIndex = 20, Required = true)]
+			[InputField(OrderIndex = 20, Required = true, Label = "Processed items folder")]
+			[BindToOutput(nameof(Response.ProcessedItemsFolder))]
 			public string ProcessedItemsFolder { get; set; }
 
 			[NotField]
