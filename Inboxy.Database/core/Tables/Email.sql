@@ -8,5 +8,6 @@ CREATE TABLE [dbo].[Email]
 	[From] VARCHAR(200) NOT NULL,
 	[Subject] NVARCHAR(MAX) NULL,
 	[Body] NVARCHAR(MAX) NULL,
+	[BodyType] INT NOT NULL,
 	CONSTRAINT FK_Email_InboxId FOREIGN KEY (InboxId) REFERENCES Inbox(Id)
 )

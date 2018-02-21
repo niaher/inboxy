@@ -7,6 +7,8 @@
 	using Inboxy.Core.Commands.Inbox;
 	using Inboxy.Core.DataAccess;
 	using Inboxy.Core.Domain;
+	using Inboxy.Core.Forms;
+	using Inboxy.Core.Forms.Outputs;
 	using Inboxy.Core.Security.Email;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Security;
@@ -35,16 +37,16 @@
 		public async Task<Response> Handle(Request message)
 		{
 			var email = await this.context.ImportedEmails
-				.Include(t => t.Inbox)
+				.Include(t => t.LinkedFolder)
 				.SingleOrExceptionAsync(t => t.Id == message.Id);
 
 			return new Response
 			{
-				Body = email.Body,
+				Body = new EmailBody(email.Body, email.BodyType),
 				From = email.From,
 				ReceivedOn = email.ReceivedOn,
 				ImportedOn = email.ImportedOn,
-				Inbox = InboxOverview.Button(email.InboxId, email.Inbox.Email),
+				Inbox = InboxOverview.Button(email.InboxId, email.LinkedFolder.Email),
 				Metadata = new MyFormResponseMetadata
 				{
 					Title = email.Subject
@@ -76,19 +78,21 @@
 
 		public class Response : FormResponse<MyFormResponseMetadata>
 		{
-			[OutputField(OrderIndex = 30)]
-			public string Body { get; set; }
+			[OutputField(OrderIndex = 30, Label = "")]
+			public EmailBody Body { get; set; }
 
 			[OutputField(OrderIndex = 1)]
 			public string From { get; set; }
 
-			[OutputField(OrderIndex = 10)]
+			[OutputField(OrderIndex = 10, Label = "Imported on")]
+			[DateTimeFormat(DateTimeFormat.DateAndTime)]
 			public DateTime ImportedOn { get; set; }
 
 			[OutputField(OrderIndex = 20)]
 			public FormLink Inbox { get; set; }
 
-			[OutputField(OrderIndex = 5)]
+			[OutputField(OrderIndex = 5, Label = "Received on")]
+			[DateTimeFormat(DateTimeFormat.DateAndTime)]
 			public DateTime ReceivedOn { get; set; }
 		}
 	}

@@ -29,7 +29,7 @@
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inboxes = await this.context.Inboxes
+			var inboxes = await this.context.LinkedFolders
 				.Where(t => t.Users.Any(x => x.UserId == this.userContext.User.UserId))
 				.PaginateAsync(t => new InboxRow
 				{

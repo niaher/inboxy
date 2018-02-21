@@ -17,7 +17,7 @@
 
 	[MyForm(Id = "inbox", PostOnLoad = true)]
 	public class InboxOverview : IMyAsyncForm<InboxOverview.Request, InboxOverview.Response>,
-		IAsyncSecureHandler<Inbox, InboxOverview.Request, InboxOverview.Response>
+		IAsyncSecureHandler<LinkedFolder, InboxOverview.Request, InboxOverview.Response>
 	{
 		private readonly CoreDbContext context;
 
@@ -26,18 +26,19 @@
 			this.context = context;
 		}
 
-		public UserAction<Inbox> GetPermission()
+		public UserAction<LinkedFolder> GetPermission()
 		{
 			return InboxAction.Manage;
 		}
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inbox = await this.context.Inboxes.SingleOrExceptionAsync(t => t.Id == message.InboxId);
+			var inbox = await this.context.LinkedFolders.SingleOrExceptionAsync(t => t.Id == message.InboxId);
 			var emailCount = await this.context.ImportedEmails.CountAsync(t => t.InboxId == message.InboxId);
 
 			return new Response
 			{
+				Tabs = TabstripUtility.GetInboxTabs(typeof(InboxOverview).GetFormId(), inbox.Id),
 				Id = inbox.Id,
 				Email = inbox.Email,
 				NewItemsFolder = inbox.NewItemsFolder,
@@ -75,7 +76,7 @@
 
 		public class Response : FormResponse<MyFormResponseMetadata>
 		{
-			[OutputField(OrderIndex = -10)]
+			[OutputField(OrderIndex = -5)]
 			public ActionList Actions { get; set; }
 
 			[OutputField(Label = "Email", OrderIndex = 5)]
@@ -92,6 +93,9 @@
 
 			[OutputField(Label = "Processed items folder", OrderIndex = 15)]
 			public string ProcessedItemsFolder { get; set; }
+
+			[OutputField(OrderIndex = -10)]
+			public Tabstrip Tabs { get; set; }
 		}
 	}
 }

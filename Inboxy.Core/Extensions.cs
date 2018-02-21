@@ -119,6 +119,11 @@ namespace Inboxy.Core
 		public static void RemoveRange<T>(this ICollection<T> list, Func<T, bool> filter)
 		{
 			var toRemove = list.Where(filter).ToList();
+			list.RemoveRange(toRemove);
+		}
+
+		public static void RemoveRange<T>(this ICollection<T> list, IEnumerable<T> toRemove)
+		{
 			foreach (var item in toRemove)
 			{
 				list.Remove(item);

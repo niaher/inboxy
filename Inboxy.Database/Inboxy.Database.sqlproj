@@ -85,6 +85,7 @@
     <Build Include="core\Tables\Email.sql" />
     <Build Include="core\Tables\Inbox.sql" />
     <Build Include="core\Tables\InboxUser.sql" />
+    <Build Include="core\Tables\LinkedFolder.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="create-db-login-and-user.sql" />

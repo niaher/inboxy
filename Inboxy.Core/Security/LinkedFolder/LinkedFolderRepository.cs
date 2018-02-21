@@ -1,4 +1,4 @@
-namespace Inboxy.Core.Security.Inbox
+namespace Inboxy.Core.Security.LinkedFolder
 {
 	using Inboxy.Core.DataAccess;
 	using Inboxy.Core.Domain;
@@ -6,11 +6,11 @@ namespace Inboxy.Core.Security.Inbox
 	using Inboxy.Infrastructure.Security;
 
 	[EntityRepository(EntityType = typeof(LinkedFolder))]
-	public class InboxRepository : IEntityRepository
+	public class LinkedFolderRepository : IEntityRepository
 	{
 		private readonly CoreDbContext context;
 
-		public InboxRepository(CoreDbContext context)
+		public LinkedFolderRepository(CoreDbContext context)
 		{
 			this.context = context;
 		}

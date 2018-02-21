@@ -26,7 +26,7 @@
 
 		public async Task<RedirectResponse> Handle(Request message)
 		{
-			var inbox = new Inbox(
+			var inbox = new LinkedFolder(
 				message.Email,
 				message.Name,
 				message.NewItemsFolder,
@@ -36,7 +36,7 @@
 
 			inbox.AddUser(user);
 
-			this.context.Inboxes.Add(inbox);
+			this.context.LinkedFolders.Add(inbox);
 			await this.context.SaveChangesAsync();
 
 			return InboxOverview.Button(inbox.Id).AsRedirectResponse();

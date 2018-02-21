@@ -1,12 +1,15 @@
-{{format(field.data)}}
+{{format(field)}}
 
 <script>
 	import moment from "moment";
 
 	export default {
 		helpers: {
-			format: function(datetime) {
-				return datetime != null ? moment(datetime).format("D MMM YYYY") : "";
+			format: function (field) {
+				var format = (field.metadata.customProperties || {}).format || "D MMM YYYY";
+
+				var datetime = field.data;
+				return datetime != null ? moment(datetime).format(format) : "";
 			}
 		}
 	};

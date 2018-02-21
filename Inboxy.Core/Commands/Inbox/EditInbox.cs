@@ -14,7 +14,7 @@
 	using UiMetadataFramework.Core.Binding;
 
 	[MyForm(Id = "edit-inbox", PostOnLoad = true, PostOnLoadValidation = false, Label = "Edit inbox", SubmitButtonLabel = "Save changes")]
-	public class EditInbox : IMyAsyncForm<EditInbox.Request, EditInbox.Response>, IAsyncSecureHandler<Inbox, EditInbox.Request, EditInbox.Response>
+	public class EditInbox : IMyAsyncForm<EditInbox.Request, EditInbox.Response>, IAsyncSecureHandler<LinkedFolder, EditInbox.Request, EditInbox.Response>
 	{
 		private readonly CoreDbContext context;
 
@@ -23,14 +23,14 @@
 			this.context = context;
 		}
 
-		public UserAction<Inbox> GetPermission()
+		public UserAction<LinkedFolder> GetPermission()
 		{
 			return InboxAction.Manage;
 		}
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inbox = await this.context.Inboxes.SingleOrExceptionAsync(t => t.Id == message.InboxId);
+			var inbox = await this.context.LinkedFolders.SingleOrExceptionAsync(t => t.Id == message.InboxId);
 
 			if (message.Operation?.Value == RecordRequestOperation.Post)
 			{

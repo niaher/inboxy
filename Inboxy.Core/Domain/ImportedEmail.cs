@@ -5,6 +5,7 @@ namespace Inboxy.Core.Domain
 {
 	using System;
 	using Inboxy.Infrastructure.Domain;
+	using Microsoft.Exchange.WebServices.Data;
 
 	/// <summary>
 	/// Represents an email which was imported from the email server into 
@@ -19,22 +20,33 @@ namespace Inboxy.Core.Domain
 		{
 		}
 
-		internal ImportedEmail(Inbox inbox, string messageId, string from, string subject, string body, DateTime receivedOn)
+		internal ImportedEmail(LinkedFolder linkedFolder, string messageId, string @from, string subject, string body, DateTime receivedOn, BodyType bodyType)
 		{
-			this.InboxId = inbox.Id;
-			this.Inbox = inbox;
+			this.InboxId = linkedFolder.Id;
+			this.LinkedFolder = linkedFolder;
 			this.MessageId = messageId;
 			this.ImportedOn = DateTime.UtcNow;
 			this.Subject = subject;
 			this.From = from;
 			this.Body = body;
 			this.ReceivedOn = receivedOn;
+			this.BodyType = bodyType;
+		}
+
+		internal ImportedEmail(LinkedFolder linkedFolder, EmailMessage item)
+			: this(linkedFolder, item.Id.UniqueId, item.From.Address, item.Subject, item.Body.Text, item.DateTimeReceived, item.Body.BodyType)
+		{
 		}
 
 		/// <summary>
 		/// Gets email body.
 		/// </summary>
 		public string Body { get; private set; }
+
+		/// <summary>
+		/// Gets type of email body text.
+		/// </summary>
+		public BodyType BodyType { get; private set; }
 
 		/// <summary>
 		/// Gets email address from which the email was received.
@@ -46,7 +58,7 @@ namespace Inboxy.Core.Domain
 		/// </summary>
 		public DateTime ImportedOn { get; private set; }
 
-		public virtual Inbox Inbox { get; private set; }
+		public virtual LinkedFolder LinkedFolder { get; private set; }
 
 		/// <summary>
 		/// Gets inbox from which this email was imported.

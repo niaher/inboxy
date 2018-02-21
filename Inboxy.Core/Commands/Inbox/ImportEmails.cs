@@ -17,7 +17,7 @@ namespace Inboxy.Core.Commands.Inbox
 
 	[MyForm(Id = "import-emails", Label = "Import emails from inbox", PostOnLoad = true)]
 	public class ImportEmails : IMyAsyncForm<ImportEmails.Request, ImportEmails.Response>,
-		IAsyncSecureHandler<Inbox, ImportEmails.Request, ImportEmails.Response>
+		IAsyncSecureHandler<LinkedFolder, ImportEmails.Request, ImportEmails.Response>
 	{
 		private readonly CoreDbContext context;
 
@@ -26,14 +26,14 @@ namespace Inboxy.Core.Commands.Inbox
 			this.context = context;
 		}
 
-		public UserAction<Inbox> GetPermission()
+		public UserAction<LinkedFolder> GetPermission()
 		{
 			return InboxAction.Manage;
 		}
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inbox = await this.context.Inboxes.FindOrExceptionAsync(message.InboxId);
+			var inbox = await this.context.LinkedFolders.FindOrExceptionAsync(message.InboxId);
 
 			var repository = new ExchangeRepository(inbox.Email);
 			await repository.Initialize(inbox.NewItemsFolder, inbox.ProcessedItemsFolder);
@@ -46,13 +46,7 @@ namespace Inboxy.Core.Commands.Inbox
 
 			foreach (var item in result.Results)
 			{
-				var email = new ImportedEmail(
-					inbox,
-					item.Id.UniqueId,
-					item.From.Address,
-					item.Subject,
-					item.Body,
-					item.DateTimeReceived);
+				var email = new ImportedEmail(inbox, item);
 
 				var alreadyAdded = this.context.ImportedEmails.Any(t => 
 					t.InboxId == inbox.Id &&

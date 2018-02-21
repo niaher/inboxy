@@ -4,7 +4,7 @@ namespace Inboxy.Core.Security.Inbox
 	using Inboxy.Infrastructure.Security;
 	using Inboxy.Infrastructure.User;
 
-	public class InboxPermissionManager : EntityPermissionManager<UserContext, InboxAction, InboxRole, Inbox>
+	public class InboxPermissionManager : EntityPermissionManager<UserContext, InboxAction, InboxRole, LinkedFolder>
 	{
 		public InboxPermissionManager() : base(new InboxRoleChecker())
 		{

@@ -4,7 +4,5 @@ CREATE TABLE [dbo].[Inbox]
 	CreatedOn DATETIME NOT NULL,
 	[Email] VARCHAR(200) NOT NULL,
 	[Name] NVARCHAR(200) NULL,
-	[NewItemsFolder] NVARCHAR(200) NOT NULL,
-	[ProcessedItemsFolder] NVARCHAR(200) NOT NULL,
 	INDEX UX_Inbox_Email UNIQUE (Email)
 )

@@ -1,0 +1,11 @@
+<div class="email-body">
+{{#if field.data.type == 'Text'}}
+	{{field.data.text}}
+{{else}}
+	{{{field.data.text}}}
+{{/if}}
+</div>
+
+<style>
+	.email-body {margin:20px 0}
+</style>
