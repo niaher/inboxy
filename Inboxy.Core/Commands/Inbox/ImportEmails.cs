@@ -6,16 +6,17 @@ namespace Inboxy.Core.Commands.Inbox
 	using CPermissions;
 	using Inboxy.Core.DataAccess;
 	using Inboxy.Core.Domain;
-	using Inboxy.Core.Security.Inbox;
+	using Inboxy.Core.Security.LinkedFolder;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Security;
 	using MediatR;
+	using Microsoft.EntityFrameworkCore;
 	using UiMetadataFramework.Basic.Input;
 	using UiMetadataFramework.Basic.Output;
 	using UiMetadataFramework.Core;
 	using UiMetadataFramework.Core.Binding;
 
-	[MyForm(Id = "import-emails", Label = "Import emails from inbox", PostOnLoad = true)]
+	[MyForm(Id = "import-emails", Label = "Import emails from the linked folder", PostOnLoad = true)]
 	public class ImportEmails : IMyAsyncForm<ImportEmails.Request, ImportEmails.Response>,
 		IAsyncSecureHandler<LinkedFolder, ImportEmails.Request, ImportEmails.Response>
 	{
@@ -28,15 +29,18 @@ namespace Inboxy.Core.Commands.Inbox
 
 		public UserAction<LinkedFolder> GetPermission()
 		{
-			return InboxAction.Manage;
+			return LinkedFolderAction.Manage;
 		}
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inbox = await this.context.LinkedFolders.FindOrExceptionAsync(message.InboxId);
+			var folder = await this.context.LinkedFolders
+				.Include(t => t.Inbox)
+				.SingleOrExceptionAsync(t => t.Id == message.LinkedFolderId);
 
-			var repository = new ExchangeRepository(inbox.Email);
-			await repository.Initialize(inbox.NewItemsFolder, inbox.ProcessedItemsFolder);
+			var repository = new ExchangeRepository(folder.Inbox.Email);
+
+			await repository.Initialize(folder.NewItemsFolder, folder.ProcessedItemsFolder);
 
 			var result = await repository.Read(new Paginator
 			{
@@ -46,10 +50,10 @@ namespace Inboxy.Core.Commands.Inbox
 
 			foreach (var item in result.Results)
 			{
-				var email = new ImportedEmail(inbox, item);
+				var email = new ImportedEmail(folder, item);
 
-				var alreadyAdded = this.context.ImportedEmails.Any(t => 
-					t.InboxId == inbox.Id &&
+				var alreadyAdded = this.context.ImportedEmails.Any(t =>
+					t.LinkedFolderId == folder.Id &&
 					t.MessageId == email.MessageId);
 
 				if (!alreadyAdded)
@@ -65,7 +69,7 @@ namespace Inboxy.Core.Commands.Inbox
 			return new Response();
 		}
 
-		public static FormLink Button(int inboxId, string label = null)
+		public static FormLink Button(int linkedFolderId, string label = null)
 		{
 			return new FormLink
 			{
@@ -73,7 +77,7 @@ namespace Inboxy.Core.Commands.Inbox
 				Form = typeof(ImportEmails).GetFormId(),
 				InputFieldValues = new Dictionary<string, object>
 				{
-					{ nameof(Request.InboxId), inboxId }
+					{ nameof(Request.LinkedFolderId), linkedFolderId }
 				},
 				Action = FormLinkActions.Run
 			};
@@ -82,10 +86,10 @@ namespace Inboxy.Core.Commands.Inbox
 		public class Request : IRequest<Response>, ISecureHandlerRequest
 		{
 			[InputField(Hidden = true)]
-			public int InboxId { get; set; }
+			public int LinkedFolderId { get; set; }
 
 			[NotField]
-			public int ContextId => this.InboxId;
+			public int ContextId => this.LinkedFolderId;
 		}
 
 		public class Response : FormResponse<MyFormResponseMetadata>

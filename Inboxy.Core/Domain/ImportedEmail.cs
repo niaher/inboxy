@@ -22,7 +22,7 @@ namespace Inboxy.Core.Domain
 
 		internal ImportedEmail(LinkedFolder linkedFolder, string messageId, string @from, string subject, string body, DateTime receivedOn, BodyType bodyType)
 		{
-			this.InboxId = linkedFolder.Id;
+			this.LinkedFolderId = linkedFolder.Id;
 			this.LinkedFolder = linkedFolder;
 			this.MessageId = messageId;
 			this.ImportedOn = DateTime.UtcNow;
@@ -63,7 +63,7 @@ namespace Inboxy.Core.Domain
 		/// <summary>
 		/// Gets inbox from which this email was imported.
 		/// </summary>
-		public int InboxId { get; private set; }
+		public int LinkedFolderId { get; private set; }
 
 		/// <summary>
 		/// Unique identifier for the email in the inbox.

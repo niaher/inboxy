@@ -215,12 +215,12 @@ namespace Inboxy.Infrastructure
 			return new FormLinkWithRedirect(self, redirectTo);
 		}
 
-		public static T SingleOrException<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> where)
+		public static T SingleOrException<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> where, string exceptionMessage = null)
 		{
 			var item = queryable.SingleOrDefault(where);
 			if (item == null)
 			{
-				throw new BusinessException("Item not found.");
+				throw new BusinessException(exceptionMessage ?? "Item not found.");
 			}
 
 			return item;

@@ -32,7 +32,7 @@
 
 		public TypeaheadResponse<int> Handle(Request message)
 		{
-			return this.context.LinkedFolders
+			return this.context.Inboxes
 				.Where(t => t.Users.Any(x => x.UserId == this.userContext.User.UserId))
 				.GetForTypeahead(
 					message,

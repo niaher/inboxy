@@ -13,28 +13,38 @@ namespace Inboxy.Core
 
 	internal static class Extensions
 	{
-		public static T FindOrException<T>(this DbSet<T> dbSet, object key) where T : class
+		public static T FindOrException<T>(this DbSet<T> dbSet, object key, string exceptionMessage = null) where T : class
 		{
 			var entity = dbSet.Find(key);
 
 			if (entity == null)
 			{
-				throw new BusinessException("Item not found");
+				throw new BusinessException(exceptionMessage ?? "Item not found");
 			}
 
 			return entity;
 		}
 
-		public static async Task<T> FindOrExceptionAsync<T>(this DbSet<T> dbSet, object key) where T : class
+		public static async Task<T> FindOrExceptionAsync<T>(this DbSet<T> dbSet, object key, string exceptionMessage = null) where T : class
 		{
 			var entity = await dbSet.FindAsync(key);
 
 			if (entity == null)
 			{
-				throw new BusinessException("Item not found");
+				throw new BusinessException(exceptionMessage ?? "Item not found");
 			}
 
 			return entity;
+		}
+
+		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default(TValue))
+		{
+			if (dictionary.ContainsKey(key))
+			{
+				return dictionary[key];
+			}
+
+			return defaultValue;
 		}
 
 		public static async Task<PaginatedData<TSource>> PaginateAsync<TSource, TResult>(
@@ -130,12 +140,12 @@ namespace Inboxy.Core
 			}
 		}
 
-		public static async Task<T> SingleOrExceptionAsync<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> where)
+		public static async Task<T> SingleOrExceptionAsync<T>(this IQueryable<T> queryable, Expression<Func<T, bool>> where, string exceptionMessage = null)
 		{
 			var item = await queryable.SingleOrDefaultAsync(where);
 			if (item == null)
 			{
-				throw new BusinessException("Item not found.");
+				throw new BusinessException(exceptionMessage ?? "Item not found.");
 			}
 
 			return item;

@@ -5,7 +5,7 @@ namespace Inboxy.Core.Security.Inbox
 	using Inboxy.Infrastructure;
 	using Inboxy.Infrastructure.Security;
 
-	[EntityRepository(EntityType = typeof(LinkedFolder))]
+	[EntityRepository(EntityType = typeof(Inbox))]
 	public class InboxRepository : IEntityRepository
 	{
 		private readonly CoreDbContext context;
@@ -17,7 +17,7 @@ namespace Inboxy.Core.Security.Inbox
 
 		public object Find(int entityId)
 		{
-			return this.context.LinkedFolders.SingleOrException(t => t.Id == entityId);
+			return this.context.Inboxes.SingleOrException(t => t.Id == entityId);
 		}
 	}
 }

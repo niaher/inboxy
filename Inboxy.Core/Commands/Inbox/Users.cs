@@ -17,7 +17,7 @@
 	using UiMetadataFramework.Core.Binding;
 
 	[MyForm(Id = "inbox-users", PostOnLoad = true)]
-	public class Users : IMyAsyncForm<Users.Request, Users.Response>, IAsyncSecureHandler<LinkedFolder, Users.Request, Users.Response>
+	public class Users : IMyAsyncForm<Users.Request, Users.Response>, IAsyncSecureHandler<Inbox, Users.Request, Users.Response>
 	{
 		private readonly CoreDbContext context;
 
@@ -26,14 +26,14 @@
 			this.context = context;
 		}
 
-		public UserAction<LinkedFolder> GetPermission()
+		public UserAction<Inbox> GetPermission()
 		{
 			return InboxAction.Manage;
 		}
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inbox = await this.context.LinkedFolders
+			var inbox = await this.context.Inboxes
 				.Include(t => t.Users)
 				.ThenInclude(t => t.User)
 				.SingleOrExceptionAsync(t => t.Id == message.InboxId);

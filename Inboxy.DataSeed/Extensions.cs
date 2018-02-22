@@ -11,10 +11,11 @@
 
 	public static class Extensions
 	{
-		public static async Task<LinkedFolder> EnsureInbox(this CoreDbContext context, string email, string newItemsFolder, string processedItemsFolder)
+		public static async Task<Inbox> EnsureInbox(this CoreDbContext context, string email, params RegisteredUser[] users)
 		{
-			var inbox = new LinkedFolder(email, email, newItemsFolder, processedItemsFolder);
-			context.LinkedFolders.Add(inbox);
+			var inbox = new Inbox(email, email, users);
+			context.Inboxes.Add(inbox);
+
 			await context.SaveChangesAsync();
 
 			return inbox;

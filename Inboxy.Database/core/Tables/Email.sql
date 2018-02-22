@@ -1,7 +1,7 @@
 CREATE TABLE [dbo].[Email]
 (
 	[Id] INT NOT NULL IDENTITY (1, 1) PRIMARY KEY CLUSTERED,
-	[InboxId] INT NOT NULL,
+	[LinkedFolderId] INT NOT NULL,
 	MessageId VARCHAR(MAX) NOT NULL,
 	ImportedOn DATETIME NOT NULL,
 	ReceivedOn DATETIME NOT NULL,
@@ -9,5 +9,5 @@ CREATE TABLE [dbo].[Email]
 	[Subject] NVARCHAR(MAX) NULL,
 	[Body] NVARCHAR(MAX) NULL,
 	[BodyType] INT NOT NULL,
-	CONSTRAINT FK_Email_InboxId FOREIGN KEY (InboxId) REFERENCES Inbox(Id)
+	CONSTRAINT FK_Email_LinkedFolderId FOREIGN KEY (LinkedFolderId) REFERENCES LinkedFolder(Id)
 )

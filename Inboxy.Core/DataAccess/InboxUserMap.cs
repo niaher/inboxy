@@ -13,7 +13,7 @@ namespace Inboxy.Core.DataAccess
 			entity.Property(t => t.InboxId).HasColumnName("InboxId");
 			entity.Property(t => t.UserId).HasColumnName("UserId");
 
-			entity.HasOne(t => t.LinkedFolder)
+			entity.HasOne(t => t.Inbox)
 				.WithMany(t => t.Users)
 				.HasForeignKey(t => t.InboxId);
 		}

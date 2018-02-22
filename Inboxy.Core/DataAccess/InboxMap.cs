@@ -18,6 +18,10 @@ namespace Inboxy.Core.DataAccess
 			var linkedFoldersProperty = entity.Metadata.FindNavigation(nameof(Inbox.LinkedFolders));
 			linkedFoldersProperty.SetPropertyAccessMode(PropertyAccessMode.Field);
 			linkedFoldersProperty.SetField(Inbox.LinkedFoldersFieldName);
+
+			var usersProperty = entity.Metadata.FindNavigation(nameof(Inbox.Users));
+			usersProperty.SetPropertyAccessMode(PropertyAccessMode.Field);
+			usersProperty.SetField(Inbox.UsersFieldName);
 		}
 	}
 }

@@ -14,7 +14,7 @@
 	using UiMetadataFramework.Core.Binding;
 
 	[MyForm(Id = "edit-inbox", PostOnLoad = true, PostOnLoadValidation = false, Label = "Edit inbox", SubmitButtonLabel = "Save changes")]
-	public class EditInbox : IMyAsyncForm<EditInbox.Request, EditInbox.Response>, IAsyncSecureHandler<LinkedFolder, EditInbox.Request, EditInbox.Response>
+	public class EditInbox : IMyAsyncForm<EditInbox.Request, EditInbox.Response>, IAsyncSecureHandler<Inbox, EditInbox.Request, EditInbox.Response>
 	{
 		private readonly CoreDbContext context;
 
@@ -23,29 +23,25 @@
 			this.context = context;
 		}
 
-		public UserAction<LinkedFolder> GetPermission()
+		public UserAction<Inbox> GetPermission()
 		{
 			return InboxAction.Manage;
 		}
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inbox = await this.context.LinkedFolders.SingleOrExceptionAsync(t => t.Id == message.InboxId);
+			var inbox = await this.context.Inboxes.SingleOrExceptionAsync(t => t.Id == message.InboxId);
 
 			if (message.Operation?.Value == RecordRequestOperation.Post)
 			{
 				inbox.ChangeName(message.Name);
 				inbox.ChangeEmail(message.Email);
-				inbox.ChangeNewItemsFolder(message.NewItemsFolder);
-				inbox.ChangeProcessedItemsFolder(message.ProcessedItemsFolder);
 
 				await this.context.SaveChangesAsync();
 			}
 
 			return new Response
 			{
-				NewItemsFolder = inbox.NewItemsFolder,
-				ProcessedItemsFolder = inbox.ProcessedItemsFolder,
 				Email = inbox.Email,
 				Name = inbox.Name
 			};
@@ -77,14 +73,6 @@
 			[BindToOutput(nameof(Response.Name))]
 			public string Name { get; set; }
 
-			[InputField(OrderIndex = 15, Required = true, Label = "New items folder")]
-			[BindToOutput(nameof(Response.NewItemsFolder))]
-			public string NewItemsFolder { get; set; }
-
-			[InputField(OrderIndex = 20, Required = true, Label = "Processed items folder")]
-			[BindToOutput(nameof(Response.ProcessedItemsFolder))]
-			public string ProcessedItemsFolder { get; set; }
-
 			[NotField]
 			public int ContextId => this.InboxId;
 		}
@@ -96,12 +84,6 @@
 
 			[NotField]
 			public string Name { get; set; }
-
-			[NotField]
-			public string NewItemsFolder { get; set; }
-
-			[NotField]
-			public string ProcessedItemsFolder { get; set; }
 		}
 	}
 }

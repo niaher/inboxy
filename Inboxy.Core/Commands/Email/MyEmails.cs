@@ -5,7 +5,7 @@
 	using System.Linq;
 	using System.Threading.Tasks;
 	using CPermissions;
-	using Inboxy.Core.Commands.Inbox;
+	using Inboxy.Core.Commands.LinkedFolder;
 	using Inboxy.Core.DataAccess;
 	using Inboxy.Core.Forms;
 	using Inboxy.Core.Menus;
@@ -40,7 +40,7 @@
 		{
 			var emails = await this.context.ImportedEmails
 				.Include(t => t.LinkedFolder)
-				.Where(t => t.LinkedFolder.Users.Any(x => x.UserId == this.userContext.User.UserId))
+				.Where(t => t.LinkedFolder.Inbox.Users.Any(x => x.UserId == this.userContext.User.UserId))
 				.PaginateAsync(message.EmailPaginator);
 
 			return new Response
@@ -48,7 +48,7 @@
 				Emails = emails.Transform(t => new EmailItem
 				{
 					Subject = EmailDetails.Button(t.Id, t.Subject),
-					Inbox = InboxOverview.Button(t.InboxId, t.LinkedFolder.Name),
+					LinkedFolder = LinkedFolderOverview.Button(t.LinkedFolderId, t.LinkedFolder.Name),
 					From = t.From,
 					ReceivedOn = t.ReceivedOn
 				})
@@ -92,15 +92,15 @@
 			[OutputField(OrderIndex = 5)]
 			public string From { get; set; }
 
+			[OutputField(OrderIndex = 15, Label = "Linked folder")]
+			public FormLink LinkedFolder { get; set; }
+
 			[OutputField(OrderIndex = 10, Label = "Received on")]
 			[DateTimeFormat(DateTimeFormat.DateAndTime)]
 			public DateTime ReceivedOn { get; set; }
 
 			[OutputField(OrderIndex = 1)]
 			public FormLink Subject { get; set; }
-
-			[OutputField(OrderIndex = 15)]
-			public FormLink Inbox { get; set; }
 		}
 	}
 }

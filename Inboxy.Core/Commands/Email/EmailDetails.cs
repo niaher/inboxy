@@ -5,6 +5,7 @@
 	using System.Threading.Tasks;
 	using CPermissions;
 	using Inboxy.Core.Commands.Inbox;
+	using Inboxy.Core.Commands.LinkedFolder;
 	using Inboxy.Core.DataAccess;
 	using Inboxy.Core.Domain;
 	using Inboxy.Core.Forms;
@@ -38,6 +39,7 @@
 		{
 			var email = await this.context.ImportedEmails
 				.Include(t => t.LinkedFolder)
+				.ThenInclude(t => t.Inbox)
 				.SingleOrExceptionAsync(t => t.Id == message.Id);
 
 			return new Response
@@ -46,7 +48,8 @@
 				From = email.From,
 				ReceivedOn = email.ReceivedOn,
 				ImportedOn = email.ImportedOn,
-				Inbox = InboxOverview.Button(email.InboxId, email.LinkedFolder.Email),
+				Inbox = InboxOverview.Button(email.LinkedFolder.InboxId, email.LinkedFolder.Inbox.Name),
+				LinkedFolder = LinkedFolderOverview.Button(email.LinkedFolderId, email.LinkedFolder.Name),
 				Metadata = new MyFormResponseMetadata
 				{
 					Title = email.Subject
@@ -88,8 +91,11 @@
 			[DateTimeFormat(DateTimeFormat.DateAndTime)]
 			public DateTime ImportedOn { get; set; }
 
-			[OutputField(OrderIndex = 20)]
+			[OutputField(OrderIndex = 19)]
 			public FormLink Inbox { get; set; }
+
+			[OutputField(OrderIndex = 20)]
+			public FormLink LinkedFolder { get; set; }
 
 			[OutputField(OrderIndex = 5, Label = "Received on")]
 			[DateTimeFormat(DateTimeFormat.DateAndTime)]

@@ -1,8 +1,10 @@
 namespace Inboxy.DataSeed
 {
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Inboxy.Core.DataAccess;
+	using Inboxy.Core.Domain;
 	using Inboxy.Core.Security;
 	using Inboxy.Infrastructure.Security;
 	using Inboxy.Users;
@@ -41,14 +43,15 @@ namespace Inboxy.DataSeed
 
 		private async Task EnsureInbox(string inboxEmail, params string[] adminEmails)
 		{
-			var inbox = await this.context.EnsureInbox(inboxEmail, "inboxy-new", "inboxy-processed");
-
+			var users = new List<RegisteredUser>();
 			foreach (var adminEmail in adminEmails)
 			{
 				var user = await this.userManager.EnsureUser(adminEmail, "Password1", CoreRoles.ToolUser);
 				var registeredUser = await this.context.RegisteredUsers.FindAsync(user.Id);
-				inbox.AddUser(registeredUser);
+				users.Add(registeredUser);
 			}
+
+			await this.context.EnsureInbox(inboxEmail, users.ToArray());
 
 			await this.context.SaveChangesAsync();
 		}
@@ -71,7 +74,7 @@ namespace Inboxy.DataSeed
 
 		private async Task SeedUsers()
 		{
-			await this.userManager.EnsureUser("admin@example.com", "Password1", UserManagementRoles.UserAdmin, CoreRoles.ToolUser);
+			await this.userManager.EnsureUser("admin@example.com", "Password1", UserManagementRoles.UserAdmin);
 		}
 	}
 }

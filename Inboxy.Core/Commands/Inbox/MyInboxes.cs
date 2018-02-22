@@ -29,20 +29,18 @@
 
 		public async Task<Response> Handle(Request message)
 		{
-			var inboxes = await this.context.LinkedFolders
+			var inboxes = await this.context.Inboxes
 				.Where(t => t.Users.Any(x => x.UserId == this.userContext.User.UserId))
 				.PaginateAsync(t => new InboxRow
 				{
 					Email = InboxOverview.Button(t.Id, t.Name),
-					Name = t.Name,
-					NewItemsFolder = t.NewItemsFolder,
-					ProcessedItemsFolder = t.ProcessedItemsFolder
+					Name = t.Name
 				}, message.Paginator);
 
 			return new Response
 			{
 				Inboxes = inboxes,
-				Actions = new ActionList(AddInbox.Button("Create new inbox"))
+				Actions = new ActionList(CreateInbox.Button("Create new inbox"))
 			};
 		}
 
@@ -72,12 +70,6 @@
 
 			[OutputField(OrderIndex = 2)]
 			public string Name { get; set; }
-
-			[OutputField(Label = "New items folder", OrderIndex = 5)]
-			public string NewItemsFolder { get; set; }
-
-			[OutputField(Label = "Processed items folder", OrderIndex = 10)]
-			public string ProcessedItemsFolder { get; set; }
 		}
 	}
 }

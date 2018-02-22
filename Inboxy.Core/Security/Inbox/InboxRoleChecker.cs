@@ -6,9 +6,9 @@ namespace Inboxy.Core.Security.Inbox
 	using Inboxy.Core.Domain;
 	using Inboxy.Infrastructure.User;
 
-	public class InboxRoleChecker : IRoleChecker<UserContext, InboxRole, LinkedFolder>
+	public class InboxRoleChecker : IRoleChecker<UserContext, InboxRole, Inbox>
 	{
-		public IEnumerable<InboxRole> GetRoles(UserContext user, LinkedFolder context)
+		public IEnumerable<InboxRole> GetRoles(UserContext user, Inbox context)
 		{
 			if (user.User.InboxIds.Contains(context.Id))
 			{
