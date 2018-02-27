@@ -17,7 +17,7 @@ namespace Inboxy.Core.DataAccess
 			entity.Property(t => t.Id).HasColumnName("Id");
 			entity.Property(t => t.ImportedOn).HasColumnName("ImportedOn");
 			entity.Property(t => t.ReceivedOn).HasColumnName("ReceivedOn");
-			entity.Property(t => t.LinkedFolderId).HasColumnName("InboxId");
+			entity.Property(t => t.LinkedFolderId).HasColumnName("LinkedFolderId");
 			entity.Property(t => t.BodyType).HasColumnName("BodyType");
 
 			entity.HasOne(t => t.LinkedFolder)
