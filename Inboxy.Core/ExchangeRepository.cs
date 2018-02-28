@@ -39,8 +39,8 @@ namespace Inboxy.Core
 
 		public async Task Initialize(string newItemsFolder, string processedItemsFolder)
 		{
-			this.NewItemsFolderId = await this.GetFolderId("inboxy-new");
-			this.ProcessedItemsFolderId = await this.GetFolderId("inboxy-processed");
+			this.NewItemsFolderId = await this.GetFolderId(newItemsFolder);
+			this.ProcessedItemsFolderId = await this.GetFolderId(processedItemsFolder);
 		}
 
 		public async Task MoveItemsToProcessedFolder(IEnumerable<ItemId> itemIds)
