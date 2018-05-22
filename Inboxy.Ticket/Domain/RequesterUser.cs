@@ -7,14 +7,15 @@ namespace Inboxy.Ticket.Domain
     /// <summary>
     /// Represent user details for ticket requester
     /// </summary>
-    internal class RequesterUser
+    public class RequesterUser
     {
         private RequesterUser()
         {
         }
 
-        public RequesterUser(string email, int linkedFolderId)
+        public RequesterUser(string name, string email, int linkedFolderId)
         {
+            this.Name = name;
             this.Email = email;
             this.LinkedFolderId = linkedFolderId;
         }
@@ -22,5 +23,7 @@ namespace Inboxy.Ticket.Domain
         public string Email { get; private set; }
         public int Id { get; private set; }
         public int LinkedFolderId { get; set; }
+
+        public string Name { get; private set; }
     }
 }

@@ -10,6 +10,13 @@
         {
             builder.ToTable("Ticket", TicketDbContext.Schema);
             builder.HasKey(t => t.Id);
+            builder.Property(t => t.Id).HasColumnName("Id").UseSqlServerIdentityColumn();
+
+
+            var usersProperty = builder.Metadata.FindNavigation(nameof(Ticket.Comments));
+            usersProperty.SetPropertyAccessMode(PropertyAccessMode.Field);
+            usersProperty.SetField(Ticket.CommentsFieldName);
+
         }
     }
 }

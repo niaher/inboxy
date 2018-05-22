@@ -89,7 +89,6 @@
     <Build Include="core\Tables\InboxUser.sql" />
     <Build Include="core\Tables\LinkedFolder.sql" />
     <Build Include="ticket\Tables\Ticket.sql" />
-    <Build Include="ticket\Tables\Requester.sql" />
     <Build Include="ticket\Tables\TicketComment.sql" />
     <Build Include="ticket\Tables\TicketStatus.sql" />
     <Build Include="ticket\Tables\RequesterUser.sql" />

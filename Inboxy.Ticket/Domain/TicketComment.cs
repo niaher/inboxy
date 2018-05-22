@@ -8,14 +8,18 @@ namespace Inboxy.Ticket.Domain
     /// <summary>
     /// Represent one comment on ticket 
     /// </summary>
-    internal class TicketComment
+    public class TicketComment
     {
-        public TicketComment(string comment, int? emailId, Ticket ticket)
+        public TicketComment(string comment, int emailId)
         {
             this.Comment = comment;
             this.EmailId = emailId;
-            this.Ticket = ticket;
-            this.TicketId = ticket.Id;
+            this.CreatedOn = DateTime.UtcNow;
+        }
+
+        public TicketComment(string comment)
+        {
+            this.Comment = comment;
             this.CreatedOn = DateTime.UtcNow;
         }
 
@@ -46,5 +50,11 @@ namespace Inboxy.Ticket.Domain
         /// Get ticket Id
         /// </summary>
         public int TicketId { get; private set; }
+
+
+        /// <summary>
+        /// Get the value whether this comment is the initial comment for ticket
+        /// </summary>
+        public bool IsInitial { get; private set; }
     }
 }

@@ -16,5 +16,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Inboxy.Core\Inboxy.Core.csproj" />
+		<ProjectReference Include="..\Inboxy.Ticket\Inboxy.Ticket.csproj" />
 	</ItemGroup>
 </Project>

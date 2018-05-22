@@ -5,11 +5,11 @@ namespace Inboxy.Infrastructure.Security
 
 	public class EntityAction<TContext, TRole> : UserAction<TContext>
 	{
-		public EntityAction(string name, params TRole[] allowedRoles) : base(name)
+		public EntityAction(string name, params TRole[] allowedRole) : base(name)
 		{
-			this.Roles = allowedRoles;
+			this.Role = allowedRole;
 		}
 
-		public IEnumerable<TRole> Roles { get; }
+		public IEnumerable<TRole> Role { get; }
 	}
 }

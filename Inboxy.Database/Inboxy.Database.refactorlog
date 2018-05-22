@@ -14,4 +14,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="LinkedFolderId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="348ca44f-1b30-4004-ae55-c6e5a707e998" ChangeDateTime="05/21/2018 10:49:09">
+    <Property Name="ElementName" Value="[Ticket].[ticket].[RequesterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[Ticket].[ticket]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RequesterUserId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="94b96028-eaaf-41f9-bc58-5ef2d923d7b2" ChangeDateTime="05/21/2018 10:55:46">
+    <Property Name="ElementName" Value="[Ticket].[Ticket].[Status]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[Ticket].[Ticket]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="StatusId" />
+  </Operation>
 </Operations>

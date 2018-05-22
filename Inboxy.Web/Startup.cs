@@ -14,7 +14,8 @@ namespace Inboxy.Web
 	using Inboxy.Infrastructure.Forms.Menu;
 	using Inboxy.Infrastructure.Security;
 	using Inboxy.Infrastructure.User;
-	using Inboxy.Users;
+    using Inboxy.Ticket.DataAccess;
+    using Inboxy.Users;
 	using Inboxy.Users.Commands;
 	using Inboxy.Web.Middleware;
 	using MediatR;
@@ -87,6 +88,7 @@ namespace Inboxy.Web
 
 			// Register all assemblies with IRequestHandler.
 			services.AddMediatR(typeof(CoreDbContext));
+			services.AddMediatR(typeof(TicketDbContext));
 			services.AddMediatR(typeof(InvokeForm));
 			services.AddMediatR(typeof(MyForms));
 			services.AddMediatR(typeof(ManageUsers));
@@ -125,8 +127,12 @@ namespace Inboxy.Web
 				var coreDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
 				config.For<CoreDbContext>().Use(ctx => new CoreDbContext(coreDbContextOptions));
 				
-				// Nofy.
-				var nofyDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
+                // Inboxy.Ticket
+                var ticketDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
+                config.For<TicketDbContext>().Use(ctx => new TicketDbContext(ticketDbContextOptions));
+
+                // Nofy.
+                var nofyDbContextOptions = new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
 				config.For<INotificationRepository>().Use<NotificationRepository>();
 				config.For<NotificationRepository>().Use(ctx => new NotificationRepository(ctx.GetInstance<NofyDataContext>()));
 				config.For<NofyDataContext>().Use(ctx => new NofyDataContext(nofyDbContextOptions, "ntf"));

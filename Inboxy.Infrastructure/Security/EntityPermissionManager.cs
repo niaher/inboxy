@@ -21,7 +21,7 @@ namespace Inboxy.Infrastructure.Security
 				.Cast<TAction>()
 				.ToList();
 
-			return actions.Where(t => t.Roles.Contains(role));
+			return actions.Where(t => t.Role.Contains(role));
 		}
 	}
 }
