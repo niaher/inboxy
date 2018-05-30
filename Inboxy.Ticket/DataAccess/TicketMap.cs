@@ -13,10 +13,9 @@
             builder.Property(t => t.Id).HasColumnName("Id").UseSqlServerIdentityColumn();
 
 
-            var usersProperty = builder.Metadata.FindNavigation(nameof(Ticket.Comments));
-            usersProperty.SetPropertyAccessMode(PropertyAccessMode.Field);
-            usersProperty.SetField(Ticket.CommentsFieldName);
-
+            var commentsProperty = builder.Metadata.FindNavigation(nameof(Ticket.Comments));
+            commentsProperty.SetPropertyAccessMode(PropertyAccessMode.Field);
+            commentsProperty.SetField(Ticket.CommentsFieldName);
         }
     }
 }

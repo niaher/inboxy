@@ -5,7 +5,8 @@
 
     public class TicketAction : EntityAction<Ticket, TicketRole>
     {
-        public static readonly TicketAction ViewTicket =  new TicketAction(nameof(ViewTicket));
+        public static readonly TicketAction ViewTicket = new TicketAction(nameof(ViewTicket), TicketRole.TicketViewer);
+
         public TicketAction(string name, params TicketRole[] allowedRole) : base(name, allowedRole)
         {
         }

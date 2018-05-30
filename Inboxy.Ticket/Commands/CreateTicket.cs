@@ -5,12 +5,15 @@
     using CPermissions;
     using Inboxy.Infrastructure.Forms;
     using Inboxy.Infrastructure.Security;
+    using Inboxy.Infrastructure.User;
     using Inboxy.Ticket.DataAccess;
     using Inboxy.Ticket.Domain;
     using Inboxy.Ticket.Menus;
+    using Inboxy.Ticket.Pickers;
     using Inboxy.Ticket.Security;
     using MediatR;
     using UiMetadataFramework.Basic.Input;
+    using UiMetadataFramework.Basic.Input.Typeahead;
     using UiMetadataFramework.Core;
     using UiMetadataFramework.Core.Binding;
 
@@ -19,21 +22,23 @@
         ISecureHandler
     {
         private readonly TicketDbContext dbContext;
+        private readonly UserContext userContext;
 
-        public CreateTicket(TicketDbContext dbContext)
+        public CreateTicket(TicketDbContext dbContext, UserContext userContext)
         {
             this.dbContext = dbContext;
+            this.userContext = userContext;
         }
 
         public async Task<Response> Handle(Request message)
         {
             var requesterUser =
                 this.dbContext.RequesterUsers.FirstOrDefault(t => t.Email == message.Email && t.LinkedFolderId == message.LinkedFolderId) ??
-                new RequesterUser(message.Email, message.LinkedFolderId);
+                new RequesterUser(message.Name, message.Email, message.LinkedFolderId);
 
-            var ticketComment = new TicketComment(message.Details.Value);
+            var inbox = await this.dbContext.Inboxes.FindOrExceptionAsync(message.InboxId.Value);
 
-            var ticket = new Ticket(null, requesterUser, ticketComment, message.LinkedFolderId);
+            var ticket = new Ticket(message.Subject, this.userContext.User.UserId, requesterUser, message.Details.Value, inbox, message.LinkedFolderId);
 
             this.dbContext.Tickets.Add(ticket);
 
@@ -53,14 +58,23 @@
 
         public class Request : IRequest<Response>
         {
-            [InputField(Label = "How we can help?", Required = true, OrderIndex = 2)]
+            [InputField(Label = "How we can help?", Required = true, OrderIndex = 3)]
             public TextareaValue Details { get; set; }
 
             [InputField(Label = "Email", Required = true, OrderIndex = 1)]
             public string Email { get; set; }
 
+            [TypeaheadInputField(typeof(MyInboxesTypeaheadRemoteSource), Label = "Inbox", OrderIndex = -1)]
+            public TypeaheadValue<int> InboxId { get; set; }
+
             [NotField]
             public int LinkedFolderId { get; set; }
+
+            [InputField(Label = "Name", Required = true, OrderIndex = 0)]
+            public string Name { get; set; }
+
+            [InputField(Label = "Subject", Required = true, OrderIndex = 2)]
+            public string Subject { get; set; }
         }
     }
 }

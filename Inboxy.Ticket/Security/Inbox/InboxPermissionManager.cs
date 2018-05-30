@@ -9,6 +9,7 @@
     {
         public InboxPermissionManager(IRoleChecker<UserContext, InboxRole, Inbox> roleChecker) : base(roleChecker)
         {
+
         }
     }
 }

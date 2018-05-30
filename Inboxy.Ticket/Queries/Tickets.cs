@@ -4,11 +4,14 @@
     using System.Linq;
     using System.Threading.Tasks;
     using CPermissions;
+    using Inboxy.Infrastructure.EntityFramework;
     using Inboxy.Infrastructure.Forms;
     using Inboxy.Infrastructure.Security;
+    using Inboxy.Infrastructure.User;
     using Inboxy.Ticket.DataAccess;
     using Inboxy.Ticket.Domain;
-    using Inboxy.Ticket.Security.Inbox;
+    using Inboxy.Ticket.Menus;
+    using Inboxy.Ticket.Security;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using UiMetadataFramework.Basic.Input;
@@ -16,29 +19,31 @@
     using UiMetadataFramework.Core;
     using UiMetadataFramework.Core.Binding;
 
-    [MyForm(Id = "tickets", Label = "Tickets",PostOnLoad = true)]
+    /// <summary>
+    /// This form display all tickets related to specific folder
+    /// </summary>
+    [MyForm(Id = "tickets", Label = "Tickets",PostOnLoad = true,Menu = TicketMenus.Ticket)]
     public class Tickets : IMyAsyncForm<Tickets.Request, Tickets.Response>,
-        IAsyncSecureHandler<Inbox, Tickets.Request, Tickets.Response>
+        ISecureHandler
     {
         private readonly TicketDbContext context;
+        private readonly UserContext userContext;
 
-        public Tickets(TicketDbContext context)
+        public Tickets(TicketDbContext context, UserContext userContext)
         {
             this.context = context;
-        }
-
-        public UserAction<Inbox> GetPermission()
-        {
-            return InboxAction.ManageTickets;
+            this.userContext = userContext;
         }
 
         public async Task<Response> Handle(Request message)
         {
-            var tickets = await this.context.Tickets
+            var userInboxes = this.context.InboxUsers.Where(t => t.UserId == this.userContext.User.UserId).Select(t=>t.InboxId).ToList();
+
+            var tickets = this.context.Tickets
                 .Include(t => t.RequesterUser)
-                .Include(t => t.Status)
-                .Where(t => t.LinkedFolderId == message.InboxId)
-                .PaginateAsync(t => new Data(t), message.Paginator);
+                //.Include(t => t.Status) todo: fix the status relation ship
+                .Where(t => userInboxes.Contains(t.InboxId) )
+                .Paginate(t => new Data(t), message.Paginator);
 
             return new Response()
             {
@@ -57,41 +62,44 @@
             public Data(Ticket t)
             {
                 this.Requester = t.RequesterUser.Name ?? t.RequesterUser.Email;
-                this.Priority = t.Priority;
+                this.Priority = t.Priority.ToString();
                 this.Requested = t.CreatedOn;
-                this.Status = t.Status.Name;
-                this.Subject = null;
-                this.Type = t.Type;
+                this.Status = t.Status?.Name;
+                this.Subject = t.Subject;
+                this.Type = t.Type.ToString();
+                this.Actions = new ActionList(TicketDetails.Button(t));
             }
 
-            [OutputField]
-            public TicketPriority Priority { get; set; }
+            [OutputField(OrderIndex = 10)]
+            public ActionList Actions { get; set; }
 
-            [OutputField]
+            [OutputField(OrderIndex = 7)]
+            public string Priority { get; set; }
+
+            [OutputField(OrderIndex = 4)]
             public DateTime Requested { get; set; }
 
-            [OutputField]
+            [OutputField(OrderIndex = 3)]
             public string Requester { get; set; }
 
-            [OutputField]
+            [OutputField(OrderIndex = 9)]
             public string Status { get; set; }
 
-            [OutputField]
-            public FormLink Subject { get; set; }
+            [OutputField(OrderIndex = 1)]
+            public string Subject { get; set; }
 
-            [OutputField]
-            public TicketType Type { get; set; }
+            [OutputField(OrderIndex = 2)]
+            public string Type { get; set; }
         }
 
-        public class Request : IRequest<Response>, ISecureHandlerRequest
+        public class Request : IRequest<Response>
         {
-            [InputField(Required = true, Hidden = true)]
-            public int InboxId { get; set; }
-
             public Paginator Paginator { get; set; }
+        }
 
-            [NotField]
-            public int ContextId => this.InboxId;
+        public UserAction GetPermission()
+        {
+            return DomainActions.ListTicket;
         }
     }
 }

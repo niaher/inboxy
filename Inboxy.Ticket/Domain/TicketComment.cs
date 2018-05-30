@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Local
-
 // ReSharper disable UnusedMember.Local
+
 namespace Inboxy.Ticket.Domain
 {
     using System;
@@ -10,16 +10,19 @@ namespace Inboxy.Ticket.Domain
     /// </summary>
     public class TicketComment
     {
-        public TicketComment(string comment, int emailId)
+        public static TicketComment InitialTicketComment(string comment, int? emailId = null)
         {
-            this.Comment = comment;
-            this.EmailId = emailId;
-            this.CreatedOn = DateTime.UtcNow;
+            return new TicketComment(comment, emailId)
+            {
+                IsInitial = true
+            };
         }
 
-        public TicketComment(string comment)
+        public TicketComment(string comment, int? emailId=null,int? userId=null)
         {
+            this.EmailId = emailId;
             this.Comment = comment;
+            this.CreatedByUserId = userId;
             this.CreatedOn = DateTime.UtcNow;
         }
 
@@ -53,7 +56,13 @@ namespace Inboxy.Ticket.Domain
 
 
         /// <summary>
-        /// Get the value whether this comment is the initial comment for ticket
+        /// Get the user who created this comment, will be null if comment was created by the system
+        /// </summary>
+        public int? CreatedByUserId { get; set; }
+
+
+        /// <summary>
+        /// Get the value whether this comment is the initial comment for ticket (initializer for the ticket)
         /// </summary>
         public bool IsInitial { get; private set; }
     }

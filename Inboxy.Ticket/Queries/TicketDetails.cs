@@ -2,22 +2,24 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using CPermissions;
     using Inboxy.Infrastructure.Forms;
-    using Inboxy.Infrastructure.Forms.Record;
     using Inboxy.Infrastructure.Security;
+    using Inboxy.Ticket.Commands;
     using Inboxy.Ticket.DataAccess;
     using Inboxy.Ticket.Domain;
-    using Inboxy.Ticket.Security.Ticket;
-    using UiMetadataFramework.Basic.EventHandlers;
-    using UiMetadataFramework.Basic.Input;
+    using Inboxy.Ticket.Security;
+    using MediatR;
+    using Microsoft.EntityFrameworkCore;
     using UiMetadataFramework.Basic.Output;
+    using UiMetadataFramework.Core;
     using UiMetadataFramework.Core.Binding;
 
-    [MyForm(Id = "Ticket", PostOnLoad = true, PostOnLoadValidation = false, SubmitButtonLabel = "Reply")]
+    [MyForm(Id = "ticket-details", PostOnLoad = true, PostOnLoadValidation = false, SubmitButtonLabel = "Reply")]
     public class TicketDetails : IMyAsyncForm<TicketDetails.Request, TicketDetails.Response>,
-        IAsyncSecureHandler<Ticket, TicketDetails.Request, TicketDetails.Response>
+        ISecureHandler
     {
         private readonly TicketDbContext context;
 
@@ -26,62 +28,104 @@
             this.context = context;
         }
 
-        public UserAction<Ticket> GetPermission()
-        {
-            return TicketAction.ViewTicket;
-        }
-
         public async Task<Response> Handle(Request message)
         {
-            var ticket = this.context.Tickets.FindOrExceptionAsync(message.TicketId);
-            return new Response();
+            var ticket = await this.context.Tickets
+                .Include(t => t.RequesterUser)
+                .Include(t=>t.Comments)
+                .SingleOrExceptionAsync(t => t.Id == message.TicketId);
+
+            return new Response()
+            {
+                Requester = ticket.RequesterUser.Name,
+                Status = ticket.GetStatus(),
+                Subject = ticket.Subject,
+                Type = ticket.Type.ToString(),
+                Priority = ticket.Priority.ToString(),
+                Requested = ticket.CreatedOn,
+                Replies = ticket.Replies().Select(t=>new TicketReply(t)),
+                Details = ticket.Details().Comment,
+                Actions = this.getActions(ticket)
+            };
         }
 
-        public class Request : RecordRequest<Response>, ISecureHandlerRequest
+        private ActionList getActions(Ticket ticket)
         {
-            [InputField]
-            [BindToOutput(nameof(Response.Priority))]
-            public TicketPriority Priority { get; set; }
+            return new ActionList(
+                Reply.Button(ticket)
+                );
+        }
 
-            [InputField(Required = true)]
-            public TextareaValue Reply { get; set; }
+        public UserAction GetPermission()
+        {
+            return DomainActions.ViewTicket;
+        }
 
+        public static FormLink Button(Ticket ticket)
+        {
+            return new FormLink
+            {
+                Label = "Details",
+                Form = typeof(TicketDetails).GetFormId(),
+                Action = FormLinkActions.Redirect,
+                InputFieldValues = new Dictionary<string, object>
+                {
+                    { nameof(Request.TicketId), ticket.Id }
+                }
+            };
+        }
+
+        public class Request : IRequest<Response>, ISecureHandlerRequest
+        {
             [InputField(Required = true, Hidden = true)]
             public int TicketId { get; set; }
-
-            [InputField]
-            [BindToOutput(nameof(Response.Type))]
-            public TicketType Type { get; set; }
 
             [NotField]
             public int ContextId => this.TicketId;
         }
 
-        public class Response : RecordResponse
+        public class Response : FormResponse<MyFormResponseMetadata>
         {
             [OutputField(OrderIndex = -5)]
             public ActionList Actions { get; set; }
 
-            [OutputField]
-            public TicketPriority Priority { get; set; }
+            [OutputField(OrderIndex = 10)]
+            public string Priority { get; set; }
 
-            [OutputField]
-            public IEnumerable<string> Replies { get; set; }
+            [OutputField(OrderIndex = 20)]
+            public IEnumerable<TicketReply> Replies { get; set; }
 
-            [OutputField]
+            [OutputField(OrderIndex = 3)]
             public DateTime Requested { get; set; }
 
-            [OutputField]
+            [OutputField(OrderIndex = 4)]
             public string Requester { get; set; }
 
-            [OutputField]
+            [OutputField(OrderIndex = 2)]
             public string Status { get; set; }
 
-            [OutputField]
+            [OutputField(OrderIndex = 1)]
             public string Subject { get; set; }
 
-            [OutputField]
-            public TicketType Type { get; set; }
+            [OutputField(OrderIndex = 2)]
+            public string Details { get; set; }
+
+            [OutputField(Hidden = true)]
+            public int TicketId { get; set; }
+
+            [OutputField(OrderIndex = 9)]
+            public string Type { get; set; }
+        }
+
+        public class TicketReply
+        {
+            public TicketReply(TicketComment comment)
+            {
+                this.Comment = comment.Comment;
+            }
+
+            [OutputField(OrderIndex = -5)]
+            public string Comment { get; set; }
         }
     }
 }

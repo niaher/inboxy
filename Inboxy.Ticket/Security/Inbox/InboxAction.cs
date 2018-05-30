@@ -5,7 +5,7 @@
 
     public class InboxAction : EntityAction<Inbox, InboxRole>
     {
-        public static readonly InboxAction ManageTickets = new InboxAction(nameof(ManageTickets), InboxRole.Helpdesk);
+        public static readonly InboxAction ManageTickets = new InboxAction(nameof(ManageTickets),InboxRole.Administrator, InboxRole.Helpdesk);
 
         public InboxAction(string name, params InboxRole[] allowedRole) : base(name, allowedRole)
         {
