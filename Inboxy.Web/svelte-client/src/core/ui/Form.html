@@ -1,5 +1,9 @@
 <div class ="form-header">
 	<h2>{{responseMetadata.title || metadata.label}}</h2>
+
+	{{#if initialized && documentation }}
+		<Help data={{documentation}}/>
+	{{/if}}
 </div>
 
 {{#if initialized && visibleInputFields.length > 0}}
@@ -27,6 +31,7 @@
 <script>
 	import FormInput from "./Input";
 	import FormOutput from "./Output";
+	import Help from './help/Help';
 
 	let tabindex = 1;
 	let formCount = 0;
@@ -60,6 +65,7 @@
 		},
 		methods: {
 			init: async function () {
+				
 				if (!this.get("initialized")) {
 					var form = this.get("form");
 
@@ -69,9 +75,10 @@
 						visibleInputFields: form.inputs.filter(t => t.metadata.hidden == false),
 						submitButtonLabel: form.metadata.customProperties != null && form.metadata.customProperties.submitButtonLabel
 							? form.metadata.customProperties.submitButtonLabel
-							: "Submit"
+							: "Submit",
+						documentation : form.metadata.customProperties != null && form.metadata.customProperties.documentation ?
+						form.metadata.customProperties.documentation : null
 					});
-
 					tabindex += 1;
 
 					var app = this.get("app");
@@ -213,7 +220,8 @@
 		},
 		components: {
 			FormInput,
-			FormOutput
+			FormOutput,
+			Help
 		}
 	};
 </script>

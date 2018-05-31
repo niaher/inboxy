@@ -38,6 +38,7 @@ import Image from "core-ui/outputs/Image";
 import Link from "core-ui/outputs/Link";
 import ObjectList from "core-ui/outputs/ObjectList";
 import EmailBody from "core-ui/outputs/EmailBody";
+import RawHtml from "core-ui/outputs/RawHtml";
 
 import {
 	FormLogToConsole,
@@ -80,6 +81,7 @@ controlRegister.registerOutputFieldControl("image", Image, { block: true });
 controlRegister.registerOutputFieldControl("link", Link);
 controlRegister.registerOutputFieldControl("object-list", ObjectList, { block: true });
 controlRegister.registerOutputFieldControl("email-body", EmailBody, { block: true });
+controlRegister.registerOutputFieldControl("raw-html", RawHtml, { block: true });
 
 // Form event handlers.
 controlRegister.registerFormEventHandler("log-to-console", new FormLogToConsole());

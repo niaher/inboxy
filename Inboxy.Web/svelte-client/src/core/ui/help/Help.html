@@ -1,0 +1,60 @@
+	{{#if document != null}}
+			<!-- If help as hint tooltip -->
+			{{ #if document.placement == 'Hint' }}
+				{{ #if document.sourceType == 'String'}}
+					<!-- If help is just string content -->
+					<span class="tooltip bottom" aria-label={{document.source}}>?</span>
+				{{else}}
+					<!-- If help is a file -->
+					<a href="/#/form/help?FileId={{document.source}}" class="tooltip bottom" aria-label="Help?">?</a>
+				{{/if}}
+
+
+			<!-- Else-If help as inline description -->
+			{{ elseif  document.placement == 'InlineDescription' }}
+				
+
+				{{ #if document.sourceType == 'String' }}
+					<!-- If help is just string content -->
+					<p class="inline-help">{{{document.source}}}</p>
+				{{else}}
+					<!-- If help is a file -->
+					<a href="/#/form/help?FileId={{document.source}}">See more!</a>
+				{{/if}}
+
+			<!-- Else it's just a file -->
+			{{else}}
+			<a href="/#/form/help?FileId={{document.source}}">Help ?</a>
+			{{/if}}
+	{{/if}}
+
+<script>
+
+	export default{
+		oncreate() {
+			var data = this.get("data");
+			this.set({"document":data});
+		},
+		data: function () {
+			return {
+				document: null
+			}
+		}
+	}
+</script>
+
+<style>
+.tooltip{
+	opacity: 1;
+    display: inline;
+    margin: 10px;
+    font-weight: 700;
+    position: relative;
+}
+
+.inline-help{
+    background: #ecf8fb;
+    padding: 10px;
+}
+
+</style>

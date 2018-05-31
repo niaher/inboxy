@@ -8,7 +8,8 @@ namespace Inboxy.Web
 	using Inboxy.DataSeed;
 	using Inboxy.Filing;
 	using Inboxy.Filing.Commands;
-	using Inboxy.Infrastructure;
+    using Inboxy.Help.Commands;
+    using Inboxy.Infrastructure;
 	using Inboxy.Infrastructure.Decorators;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Forms.Menu;
@@ -31,7 +32,7 @@ namespace Inboxy.Web
 	using StructureMap.TypeRules;
 	using UiMetadataFramework.Basic.Input;
 	using UiMetadataFramework.Core.Binding;
-	using UiMetadataFramework.MediatR;
+    using UiMetadataFramework.MediatR;
 	using UimfDependencyInjectionContainer = UiMetadataFramework.Core.Binding.DependencyInjectionContainer;
 	using AppDependencyInjectionContainer = Inboxy.Infrastructure.DependencyInjectionContainer;
 	using NofyDataContext = Nofy.EntityFrameworkCore.DataContext;
@@ -93,6 +94,7 @@ namespace Inboxy.Web
 			services.AddMediatR(typeof(MyForms));
 			services.AddMediatR(typeof(ManageUsers));
 			services.AddMediatR(typeof(AttachFiles));
+			services.AddMediatR(typeof(Help));
 
 			var container = new Container();
 

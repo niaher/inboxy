@@ -11,7 +11,8 @@
 	using Inboxy.Core.Menus;
 	using Inboxy.Core.Pickers;
 	using Inboxy.Core.Security;
-	using Inboxy.Infrastructure;
+    using Inboxy.Help.Attributes;
+    using Inboxy.Infrastructure;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Security;
 	using Inboxy.Infrastructure.User;
@@ -23,11 +24,12 @@
 	using UiMetadataFramework.Core;
 	using UiMetadataFramework.Core.Binding;
 
-	[MyForm(Id = "my-emails", Label = "Emails", PostOnLoad = true, SubmitButtonLabel = "Search", Menu = CoreMenus.Emails)]
+    [Documentation(DocumentPlacement.ExternalContent,DocumentSourceType.File,"MyEmails.md")]
+    [MyForm(Id = "my-emails", Label = "Emails", PostOnLoad = true, SubmitButtonLabel = "Search", Menu = CoreMenus.Emails)]
 	public class MyEmails : IMyAsyncForm<MyEmails.Request, MyEmails.Response>,
 		ISecureHandler
-	{
-		private readonly CoreDbContext context;
+    {
+        private readonly CoreDbContext context;
 		private readonly UserContext userContext;
 
 		public MyEmails(CoreDbContext context, UserContext userContext)
