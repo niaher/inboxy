@@ -1,8 +1,9 @@
 <div class ="form-header">
 	<h2>{{responseMetadata.title || metadata.label}}</h2>
-
-	{{#if initialized && documentation }}
-		<Help data={{documentation}}/>
+	{{#if documentation }}
+		{{#each  documentation as document }}
+			<Help data={{document}}/>
+		{{/each}}
 	{{/if}}
 </div>
 

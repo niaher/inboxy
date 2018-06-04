@@ -29,7 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AFC5A5AB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inboxy.Ticket", "Inboxy.Ticket\Inboxy.Ticket.csproj", "{F5DC3719-CA81-4F79-8846-AF3C8FE17617}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inboxy.Help", "UiMetadataFramework.Help\Inboxy.Help.csproj", "{A49D1FB5-F848-4C56-A96B-164ED62DDA87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inboxy.Help", "Inboxy.Help\Inboxy.Help.csproj", "{A49D1FB5-F848-4C56-A96B-164ED62DDA87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inbox.Help.Test", "Inbox.Help.Test\Inbox.Help.Test.csproj", "{92651EA6-5245-4B92-A5EE-823ED7B86A61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,12 +81,17 @@ Global
 		{A49D1FB5-F848-4C56-A96B-164ED62DDA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A49D1FB5-F848-4C56-A96B-164ED62DDA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A49D1FB5-F848-4C56-A96B-164ED62DDA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92651EA6-5245-4B92-A5EE-823ED7B86A61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92651EA6-5245-4B92-A5EE-823ED7B86A61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92651EA6-5245-4B92-A5EE-823ED7B86A61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92651EA6-5245-4B92-A5EE-823ED7B86A61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4FDFB84C-4153-4783-A77D-9EBD49382FA9} = {AFC5A5AB-2864-4BCF-8EA0-D56BA903DEFC}
+		{92651EA6-5245-4B92-A5EE-823ED7B86A61} = {AFC5A5AB-2864-4BCF-8EA0-D56BA903DEFC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {00FFBBAD-0AD8-4835-99EC-1B1C716C9E7B}

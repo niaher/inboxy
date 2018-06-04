@@ -127,6 +127,18 @@ input, textarea, select{
     background-color: #fff
 }
 
+.form-header h2{
+  display: inline-block;
+}
+.help-content {
+  text-align: left;
+}
+
+.modal .card {
+  max-width: 85%;
+  padding: 10px 15px;
+}
+
 .form-body{
   padding: 10px 15px;
   background-color: #f8f8f8;

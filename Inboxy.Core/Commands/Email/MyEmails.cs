@@ -11,7 +11,7 @@
 	using Inboxy.Core.Menus;
 	using Inboxy.Core.Pickers;
 	using Inboxy.Core.Security;
-    using Inboxy.Help.Attributes;
+    using Inboxy.Help;
     using Inboxy.Infrastructure;
 	using Inboxy.Infrastructure.Forms;
 	using Inboxy.Infrastructure.Security;
@@ -24,7 +24,7 @@
 	using UiMetadataFramework.Core;
 	using UiMetadataFramework.Core.Binding;
 
-    [Documentation(DocumentPlacement.ExternalContent,DocumentSourceType.File,"MyEmails.md")]
+    [Documentation(DocumentationPlacement.Inline,DocumentationSourceType.String,"This is help text for this form","MyEmails.md")]
     [MyForm(Id = "my-emails", Label = "Emails", PostOnLoad = true, SubmitButtonLabel = "Search", Menu = CoreMenus.Emails)]
 	public class MyEmails : IMyAsyncForm<MyEmails.Request, MyEmails.Response>,
 		ISecureHandler
