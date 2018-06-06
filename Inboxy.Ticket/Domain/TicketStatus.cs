@@ -5,6 +5,14 @@
     /// </summary>
     public class TicketStatus
     {
+        private TicketStatus()
+        {
+        }
+
+        public TicketStatus(string name)
+        {
+            this.Name = name;
+        }
         public int Id { get; set; }
         public string Name { get; set; }
     }

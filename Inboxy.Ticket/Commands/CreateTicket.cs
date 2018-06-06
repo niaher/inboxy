@@ -33,11 +33,12 @@
         public async Task<Response> Handle(Request message)
         {
             var requesterUser =
-                this.dbContext.RequesterUsers.FirstOrDefault(t => t.Email == message.Email && t.LinkedFolderId == message.LinkedFolderId) ??
+                this.dbContext.RequesterUsers
+                    .FirstOrDefault(t => t.Email == message.Email && t.LinkedFolderId == message.LinkedFolderId) ??
                 new RequesterUser(message.Name, message.Email, message.LinkedFolderId);
 
             var inbox = await this.dbContext.Inboxes.FindOrExceptionAsync(message.InboxId.Value);
-
+            
             var ticket = new Ticket(message.Subject, this.userContext.User.UserId, requesterUser, message.Details.Value, inbox, message.LinkedFolderId);
 
             this.dbContext.Tickets.Add(ticket);

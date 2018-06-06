@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Inboxy.Core\Inboxy.Core.csproj" />
     <ProjectReference Include="..\Inboxy.Infrastructure\Inboxy.Infrastructure.csproj" />
+    <ProjectReference Include="..\Inboxy.Ticket\Inboxy.Ticket.csproj" />
     <ProjectReference Include="..\Inboxy.Users\Inboxy.Users.csproj" />
   </ItemGroup>
 

@@ -17,7 +17,7 @@
     using UiMetadataFramework.Core;
     using UiMetadataFramework.Core.Binding;
 
-    [MyForm(Id = "ticket-details", PostOnLoad = true, PostOnLoadValidation = false, SubmitButtonLabel = "Reply")]
+    [MyForm(Id = "ticket-details", PostOnLoad = true, Label = "Ticket details")]
     public class TicketDetails : IMyAsyncForm<TicketDetails.Request, TicketDetails.Response>,
         ISecureHandler
     {
@@ -35,7 +35,7 @@
                 .Include(t=>t.Comments)
                 .SingleOrExceptionAsync(t => t.Id == message.TicketId);
 
-            return new Response()
+            return new Response
             {
                 Requester = ticket.RequesterUser.Name,
                 Status = ticket.GetStatus(),
@@ -67,7 +67,6 @@
             {
                 Label = "Details",
                 Form = typeof(TicketDetails).GetFormId(),
-                Action = FormLinkActions.Redirect,
                 InputFieldValues = new Dictionary<string, object>
                 {
                     { nameof(Request.TicketId), ticket.Id }
@@ -75,13 +74,10 @@
             };
         }
 
-        public class Request : IRequest<Response>, ISecureHandlerRequest
+        public class Request : IRequest<Response>
         {
             [InputField(Required = true, Hidden = true)]
             public int TicketId { get; set; }
-
-            [NotField]
-            public int ContextId => this.TicketId;
         }
 
         public class Response : FormResponse<MyFormResponseMetadata>

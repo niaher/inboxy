@@ -7,7 +7,9 @@ namespace Inboxy.DataSeed
 	using Inboxy.Core.Domain;
 	using Inboxy.Core.Security;
 	using Inboxy.Infrastructure.Security;
-	using Inboxy.Users;
+    using Inboxy.Ticket.DataAccess;
+    using Inboxy.Ticket.Domain;
+    using Inboxy.Users;
 	using Inboxy.Users.Security;
 	using Microsoft.AspNetCore.Identity;
 
@@ -15,24 +17,28 @@ namespace Inboxy.DataSeed
 	{
 		private readonly ActionRegister actionRegister;
 		private readonly CoreDbContext context;
-		private readonly RoleManager<ApplicationRole> roleManager;
+        private readonly TicketDbContext ticketContext;
+        private readonly RoleManager<ApplicationRole> roleManager;
 		private readonly UserManager<ApplicationUser> userManager;
 
 		public DataSeed(
 			UserManager<ApplicationUser> userManager,
 			RoleManager<ApplicationRole> roleManager,
 			ActionRegister actionRegister,
-			CoreDbContext context)
+			CoreDbContext context,
+            TicketDbContext ticketContext)
 		{
 			this.userManager = userManager;
 			this.roleManager = roleManager;
 			this.actionRegister = actionRegister;
 			this.context = context;
-		}
+            this.ticketContext = ticketContext;
+        }
 
 		public async Task Seed(bool productionEnvironment = false)
 		{
 			await this.EnsureRoles();
+            await this.SeedTicketStatus();
 
 			if (!productionEnvironment)
 			{
@@ -65,7 +71,19 @@ namespace Inboxy.DataSeed
 			await this.roleManager.EnsureRoles(manuallyAssignableSystemRoles);
 		}
 
-		private async Task SeedInboxes()
+        private async Task SeedTicketStatus()
+        {
+            await this.EnsureTicket("Created");
+        }
+
+        private async Task EnsureTicket(string status)
+        {
+            var ticketStatus = new TicketStatus(status);
+            this.ticketContext.TicketStatuses.Add(ticketStatus);
+            await this.ticketContext.SaveChangesAsync();
+        }
+
+        private async Task SeedInboxes()
 		{
 			await this.EnsureInbox("ict.infrastructure@example.com", "andreh@example.com", "karsten@example.com");
 			await this.EnsureInbox("helpdesk@example.com", "nikita@example.com", "omar@example.com");

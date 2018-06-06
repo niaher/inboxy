@@ -10,6 +10,7 @@ namespace Inboxy.Ticket.Domain
 
     public class Ticket
     {
+        public const int InitialTicketState = 1;
         public const string CommentsFieldName = nameof(comments);
         private readonly List<TicketComment> comments = new List<TicketComment>();
 
@@ -25,7 +26,7 @@ namespace Inboxy.Ticket.Domain
             this.LinkedFolderId = linkedFolderId;
             this.RequesterUser = requester;
             this.Inbox = inbox;
-
+            this.StatusId = InitialTicketState;
             this.comments.Add(TicketComment.InitialTicketComment(details));
         }
 
@@ -123,5 +124,6 @@ namespace Inboxy.Ticket.Domain
         {
             this.comments.Add(new TicketComment(comment, null, userId));
         }
+
     }
 }

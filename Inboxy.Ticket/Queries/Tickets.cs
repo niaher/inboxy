@@ -37,15 +37,16 @@
 
         public async Task<Response> Handle(Request message)
         {
-            var userInboxes = this.context.InboxUsers.Where(t => t.UserId == this.userContext.User.UserId).Select(t=>t.InboxId).ToList();
+            var userInboxes = await this.context.InboxUsers.Where(t => t.UserId == this.userContext.User.UserId).Select(t=>t.InboxId).ToListAsync();
 
             var tickets = this.context.Tickets
                 .Include(t => t.RequesterUser)
-                //.Include(t => t.Status) todo: fix the status relation ship
-                .Where(t => userInboxes.Contains(t.InboxId) )
+                .Include(t => t.Status)
+                .Where(t => userInboxes.Contains(t.InboxId))
+                .OrderByDescending(t=>t.Priority)
                 .Paginate(t => new Data(t), message.Paginator);
 
-            return new Response()
+            return new Response
             {
                 Tickets = tickets
             };
@@ -67,11 +68,11 @@
                 this.Status = t.Status?.Name;
                 this.Subject = t.Subject;
                 this.Type = t.Type.ToString();
-                this.Actions = new ActionList(TicketDetails.Button(t));
+                this.Actions = TicketDetails.Button(t);
             }
 
             [OutputField(OrderIndex = 10)]
-            public ActionList Actions { get; set; }
+            public FormLink Actions { get; set; }
 
             [OutputField(OrderIndex = 7)]
             public string Priority { get; set; }
