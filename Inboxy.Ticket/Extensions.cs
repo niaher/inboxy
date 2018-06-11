@@ -49,6 +49,18 @@
 
 
 
+        public static async Task<PaginatedData<TSource>> PaginateAsync<TSource>(
+            this IQueryable<TSource> query,
+            Paginator paginationParams)
+        {
+            return await query.PaginateAsync(
+                t => t,
+                paginationParams?.PageIndex,
+                paginationParams?.PageSize,
+                paginationParams?.OrderBy,
+                paginationParams?.Ascending);
+        }
+
         public static async Task<PaginatedData<TSource>> PaginateAsync<TSource, TResult>(
             this IQueryable<TResult> query,
             Func<TResult, TSource> transform,

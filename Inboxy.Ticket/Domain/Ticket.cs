@@ -6,7 +6,9 @@ namespace Inboxy.Ticket.Domain
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Inboxy.Ticket.Queries;
     using UiMetadataFramework.Basic.Output;
+    using UiMetadataFramework.Core.Binding;
 
     public class Ticket
     {
@@ -115,6 +117,11 @@ namespace Inboxy.Ticket.Domain
             return this.Status?.Name;
         }
 
+        public void ChangeStatus(TicketStatus status)
+        {
+            this.Status = status;
+        }
+
         public IEnumerable<TicketComment> Replies()
         {
             return this.Comments?.Where(t => !t.IsInitial);
@@ -125,5 +132,17 @@ namespace Inboxy.Ticket.Domain
             this.comments.Add(new TicketComment(comment, null, userId));
         }
 
+        public FormLink Link()
+        {
+            return new FormLink
+            {
+                Label = this.Subject,
+                Form = typeof(TicketDetails).GetFormId(),
+                InputFieldValues = new Dictionary<string, object>
+                {
+                    { nameof(TicketDetails.Request.TicketId), this.Id }
+                }
+            };
+        }
     }
 }

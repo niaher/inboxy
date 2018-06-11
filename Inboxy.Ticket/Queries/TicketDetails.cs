@@ -32,7 +32,8 @@
         {
             var ticket = await this.context.Tickets
                 .Include(t => t.RequesterUser)
-                .Include(t=>t.Comments)
+                .Include(t => t.Status)
+                .Include(t => t.Comments)
                 .SingleOrExceptionAsync(t => t.Id == message.TicketId);
 
             return new Response
@@ -43,17 +44,11 @@
                 Type = ticket.Type.ToString(),
                 Priority = ticket.Priority.ToString(),
                 Requested = ticket.CreatedOn,
-                Replies = ticket.Replies().Select(t=>new TicketReply(t)),
+                Replies = ticket.Replies().Select(t => new TicketReply(t)),
                 Details = ticket.Details().Comment,
-                Actions = this.getActions(ticket)
+                Actions = this.getActions(ticket),
+                Reply = Reply.InlineForm(ticket)
             };
-        }
-
-        private ActionList getActions(Ticket ticket)
-        {
-            return new ActionList(
-                Reply.Button(ticket)
-                );
         }
 
         public UserAction GetPermission()
@@ -61,17 +56,9 @@
             return DomainActions.ViewTicket;
         }
 
-        public static FormLink Button(Ticket ticket)
+        private ActionList getActions(Ticket ticket)
         {
-            return new FormLink
-            {
-                Label = "Details",
-                Form = typeof(TicketDetails).GetFormId(),
-                InputFieldValues = new Dictionary<string, object>
-                {
-                    { nameof(Request.TicketId), ticket.Id }
-                }
-            };
+            return new ActionList(ChangeTicketStatus.Button(ticket));
         }
 
         public class Request : IRequest<Response>
@@ -85,11 +72,17 @@
             [OutputField(OrderIndex = -5)]
             public ActionList Actions { get; set; }
 
+            [OutputField(OrderIndex = 2)]
+            public string Details { get; set; }
+
             [OutputField(OrderIndex = 10)]
             public string Priority { get; set; }
 
             [OutputField(OrderIndex = 20)]
             public IEnumerable<TicketReply> Replies { get; set; }
+
+            [OutputField(OrderIndex = 30)]
+            public InlineForm Reply { get; set; }
 
             [OutputField(OrderIndex = 3)]
             public DateTime Requested { get; set; }
@@ -102,9 +95,6 @@
 
             [OutputField(OrderIndex = 1)]
             public string Subject { get; set; }
-
-            [OutputField(OrderIndex = 2)]
-            public string Details { get; set; }
 
             [OutputField(Hidden = true)]
             public int TicketId { get; set; }

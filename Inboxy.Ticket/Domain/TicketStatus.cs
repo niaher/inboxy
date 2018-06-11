@@ -15,5 +15,8 @@
         }
         public int Id { get; set; }
         public string Name { get; set; }
+        public int? LinkedFolderId { get; set; }
+
+        public virtual LinkedFolder LinkedFolder { get; set; }
     }
 }

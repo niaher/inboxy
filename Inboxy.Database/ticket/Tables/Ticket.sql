@@ -11,5 +11,6 @@
 	[InboxId] int not null,
 	[Priority] smallInt ,
 	[Type] smallInt ,
-    CONSTRAINT [FK_ticket_ToRequester] FOREIGN KEY ([RequesterUserId]) REFERENCES Ticket.RequesterUser([Id])
+    CONSTRAINT [FK_ticket_ToRequester] FOREIGN KEY ([RequesterUserId]) REFERENCES Ticket.RequesterUser([Id]), 
+    CONSTRAINT [FK_Ticket_ToTicketStatus] FOREIGN KEY (StatusId) REFERENCES [Ticket].[TicketStatus](id)
 )

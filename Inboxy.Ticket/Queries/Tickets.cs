@@ -66,13 +66,12 @@
                 this.Priority = t.Priority.ToString();
                 this.Requested = t.CreatedOn;
                 this.Status = t.Status?.Name;
-                this.Subject = t.Subject;
+                this.Subject = t.Link();
                 this.Type = t.Type.ToString();
-                this.Actions = TicketDetails.Button(t);
             }
 
             [OutputField(OrderIndex = 10)]
-            public FormLink Actions { get; set; }
+            public ActionList Actions { get; set; }
 
             [OutputField(OrderIndex = 7)]
             public string Priority { get; set; }
@@ -87,7 +86,7 @@
             public string Status { get; set; }
 
             [OutputField(OrderIndex = 1)]
-            public string Subject { get; set; }
+            public FormLink Subject { get; set; }
 
             [OutputField(OrderIndex = 2)]
             public string Type { get; set; }

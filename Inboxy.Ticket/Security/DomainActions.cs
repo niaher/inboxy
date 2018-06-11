@@ -10,5 +10,7 @@
         public static readonly SystemAction ViewTicket = new SystemAction(nameof(ViewTicket), TicketRole.AuthenticatedUser);
         public static readonly SystemAction GetInboxes = new SystemAction(nameof(GetInboxes), TicketRole.AuthenticatedUser);
         public static readonly SystemAction ReplyToTicket = new SystemAction(nameof(ReplyToTicket), TicketRole.AuthenticatedUser);
+        public static readonly SystemAction ChangeTicketStatus = new SystemAction(nameof(ChangeTicketStatus), TicketRole.AuthenticatedUser);
+        public static readonly SystemAction ManageTicketStatuses = new SystemAction(nameof(ManageTicketStatuses), TicketRole.AuthenticatedUser);
     }
 }

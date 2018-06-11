@@ -12,6 +12,7 @@
     using Inboxy.Ticket.Pickers;
     using Inboxy.Ticket.Security;
     using MediatR;
+    using Microsoft.EntityFrameworkCore;
     using UiMetadataFramework.Basic.Input;
     using UiMetadataFramework.Basic.Input.Typeahead;
     using UiMetadataFramework.Core;
@@ -37,7 +38,7 @@
                     .FirstOrDefault(t => t.Email == message.Email && t.LinkedFolderId == message.LinkedFolderId) ??
                 new RequesterUser(message.Name, message.Email, message.LinkedFolderId);
 
-            var inbox = await this.dbContext.Inboxes.FindOrExceptionAsync(message.InboxId.Value);
+            var inbox = await this.dbContext.Inboxes.Where(t=>t.Id ==  message.InboxId.Value && this.userContext.User.InboxIds.Contains(t.Id)).FirstOrDefaultAsync();
             
             var ticket = new Ticket(message.Subject, this.userContext.User.UserId, requesterUser, message.Details.Value, inbox, message.LinkedFolderId);
 

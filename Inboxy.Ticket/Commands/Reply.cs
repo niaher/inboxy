@@ -8,14 +8,17 @@
     using Inboxy.Infrastructure.User;
     using Inboxy.Ticket.DataAccess;
     using Inboxy.Ticket.Domain;
+    using Inboxy.Ticket.Queries;
     using Inboxy.Ticket.Security;
     using MediatR;
+    using UiMetadataFramework.Basic.Input;
     using UiMetadataFramework.Basic.Output;
-    using UiMetadataFramework.Core;
+    using UiMetadataFramework.Basic.Response;
     using UiMetadataFramework.Core.Binding;
+    using UiMetadataFramework.MediatR;
 
-    [MyForm(Id = "ticket-reply", Label = "Reply", SubmitButtonLabel = "Reply")]
-    public class Reply : IMyAsyncForm<Reply.Request, Reply.Response>, ISecureHandler
+    [MyForm(Id = "ticket-reply", Label = "Reply", SubmitButtonLabel = "Reply", PostOnLoad = false)]
+    public class Reply : IAsyncForm<Reply.Request, ReloadResponse>, ISecureHandler
     {
         private readonly TicketDbContext context;
         private readonly UserContext userContext;
@@ -26,26 +29,20 @@
             this.userContext = userContext;
         }
 
-        public async Task<Response> Handle(Request message)
+        public async Task<ReloadResponse> Handle(Request message)
         {
             var ticket = await this.context.Tickets.FindOrExceptionAsync(message.TicketId);
-            ticket.Reply(message.Reply, this.userContext.User.UserId);
+            ticket.Reply(message.Reply.Value, this.userContext.User.UserId);
 
             await this.context.SaveChangesAsync();
 
-            return new Response();
-        }
-
-        public static FormLink Button(Ticket ticket)
-        {
-            return new FormLink()
+            return new ReloadResponse()
             {
-                Label = "Reply",
-                Form = typeof(Reply).GetFormId(),
+                Form = typeof(TicketDetails).GetFormId(),
                 InputFieldValues = new Dictionary<string, object>()
                 {
-                    {nameof(Request.TicketId),ticket.Id }
-                }
+                    { nameof(TicketDetails.Request.TicketId), message.TicketId }
+                },
             };
         }
 
@@ -54,17 +51,38 @@
             return DomainActions.ReplyToTicket;
         }
 
-        public class Request : IRequest<Response>
+        public static FormLink Button(Ticket ticket)
+        {
+            return new FormLink
+            {
+                Label = "Reply",
+                Form = typeof(Reply).GetFormId(),
+                InputFieldValues = new Dictionary<string, object>()
+                {
+                    { nameof(Request.TicketId), ticket.Id }
+                }
+            };
+        }
+
+        public static InlineForm InlineForm(Ticket ticket)
+        {
+            return new InlineForm()
+            {
+                Form = typeof(Reply).GetFormId(),
+                InputFieldValues = new Dictionary<string, object>
+                {
+                    { nameof(Request.TicketId), ticket.Id }
+                }
+            };
+        }
+
+        public class Request : IRequest<ReloadResponse>
         {
             [InputField(Required = true)]
-            public string Reply { get; set; }
+            public TextareaValue Reply { get; set; }
 
             [InputField(Required = true, Hidden = true)]
             public int TicketId { get; set; }
-        }
-
-        public class Response : FormResponse<MyFormResponseMetadata>
-        {
         }
     }
 }
